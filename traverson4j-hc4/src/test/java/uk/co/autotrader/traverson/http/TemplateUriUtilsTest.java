@@ -1,4 +1,4 @@
-package uk.co.autotrader.traverson.link;
+package uk.co.autotrader.traverson.http;
 
 
 import org.junit.Before;

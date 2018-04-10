@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
-import uk.co.autotrader.traverson.link.TemplateUriUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

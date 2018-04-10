@@ -6,7 +6,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import uk.co.autotrader.traverson.http.Body;
 import uk.co.autotrader.traverson.http.SimpleMultipartBody;
 
-public class MultipartEntityConverter implements HttpEntityConverter {
+class MultipartEntityConverter implements HttpEntityConverter {
 
     @Override
     public HttpEntity toEntity(Body body) {

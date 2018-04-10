@@ -15,7 +15,6 @@ import uk.co.autotrader.traverson.conversion.ResourceConversionService;
 import uk.co.autotrader.traverson.datatype.AuthCredential;
 import uk.co.autotrader.traverson.exception.HttpException;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
-import uk.co.autotrader.traverson.link.TemplateUriUtils;
 
 import java.io.IOException;
 

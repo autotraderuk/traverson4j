@@ -7,26 +7,25 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.util.EntityUtils;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
-import uk.co.autotrader.traverson.link.TemplateUriUtils;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-public class Converter {
+class Converter {
 
     private final BodyFactory bodyFactory;
     private final TemplateUriUtils templateUriUtils;
     private final ResourceConversionService conversionService;
 
-    public Converter(BodyFactory bodyFactory, TemplateUriUtils templateUriUtils, ResourceConversionService conversionService) {
+    Converter(BodyFactory bodyFactory, TemplateUriUtils templateUriUtils, ResourceConversionService conversionService) {
         this.bodyFactory = bodyFactory;
         this.templateUriUtils = templateUriUtils;
         this.conversionService = conversionService;
     }
 
-    public HttpUriRequest toRequest(Request request) {
+    HttpUriRequest toRequest(Request request) {
         Map<String, List<String>> templateParams = request.getTemplateParams();
         String uri = templateUriUtils.expandTemplateUri(request.getUrl(), templateParams);
 
@@ -46,7 +45,7 @@ public class Converter {
     }
 
 
-    public <T> Response<T> toResponse(CloseableHttpResponse httpResponse, URI requestUri, Class<T> returnType) throws IOException {
+    <T> Response<T> toResponse(CloseableHttpResponse httpResponse, URI requestUri, Class<T> returnType) throws IOException {
         Response<T> response = new Response<T>();
         response.setUri(requestUri);
         response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
