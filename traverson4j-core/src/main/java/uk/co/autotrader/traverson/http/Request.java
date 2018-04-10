@@ -1,7 +1,5 @@
 package uk.co.autotrader.traverson.http;
 
-import uk.co.autotrader.traverson.datatype.AuthCredential;
-
 import java.util.*;
 import java.util.function.BiConsumer;
 

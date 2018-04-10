@@ -12,7 +12,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
-import uk.co.autotrader.traverson.datatype.AuthCredential;
 import uk.co.autotrader.traverson.exception.HttpException;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 

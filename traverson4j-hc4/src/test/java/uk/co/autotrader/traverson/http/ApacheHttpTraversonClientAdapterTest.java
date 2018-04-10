@@ -18,7 +18,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.co.autotrader.traverson.datatype.AuthCredential;
 import uk.co.autotrader.traverson.exception.HttpException;
 
 import java.io.IOException;

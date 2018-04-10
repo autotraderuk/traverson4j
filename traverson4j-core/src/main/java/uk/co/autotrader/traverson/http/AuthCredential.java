@@ -1,4 +1,4 @@
-package uk.co.autotrader.traverson.datatype;
+package uk.co.autotrader.traverson.http;
 
 public class AuthCredential {
 

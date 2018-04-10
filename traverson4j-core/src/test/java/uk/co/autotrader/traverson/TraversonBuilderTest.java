@@ -12,7 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.co.autotrader.traverson.datatype.AuthCredential;
+import uk.co.autotrader.traverson.http.AuthCredential;
 import uk.co.autotrader.traverson.exception.IncompleteTraversalException;
 import uk.co.autotrader.traverson.http.*;
 import uk.co.autotrader.traverson.link.BasicLinkDiscoverer;
