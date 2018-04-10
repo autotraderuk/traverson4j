@@ -1,0 +1,14 @@
+{
+  "name":null,
+  "_embedded":{
+    "vehicles":[
+
+    ]
+  },
+  "_links":{
+    "self":{
+      "href":"http://localhost:8080/vehicles",
+      "templated":true
+    }
+  }
+}

@@ -1,0 +1,4 @@
+dependencies {
+    compile 'com.alibaba:fastjson:1.2.5'
+    compile 'com.damnhandy:handy-uri-templates:2.1.2'
+}

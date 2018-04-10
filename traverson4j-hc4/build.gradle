@@ -1,0 +1,4 @@
+dependencies {
+    compile 'org.apache.httpcomponents:httpclient:4.4.1',
+            'org.apache.httpcomponents:httpmime:4.4.1'
+}

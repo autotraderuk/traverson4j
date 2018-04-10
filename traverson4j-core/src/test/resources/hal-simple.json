@@ -1,0 +1,11 @@
+{
+  "name":"Root",
+  "_links":{
+    "self":{
+      "href":"http://localhost:8080/"
+    },
+    "domains":{
+      "href":"http://localhost:8080/domains"
+    }
+  }
+}

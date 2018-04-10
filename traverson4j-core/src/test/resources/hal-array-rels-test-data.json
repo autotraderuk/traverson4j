@@ -1,0 +1,28 @@
+{
+    "_links": {
+        "self": {
+            "href": "http://self-link"
+        },
+
+        "not-array": {
+            "href": "not-an-array"
+        },
+
+        "array": [
+            {"href": "http://first"},
+            {"href": "http://second"}
+        ]
+
+    },
+
+    "_embedded": {
+        "not-array": {
+            "value": "not-an-array"
+        },
+
+        "array": [
+            {"_links":{"self":{"href": "http://first"}}},
+            {"_links":{"self":{"href": "http://second"}}}
+        ]
+    }
+}

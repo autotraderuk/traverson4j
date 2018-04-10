@@ -1,0 +1,29 @@
+{
+  "name":"Domains",
+  "_embedded":{
+    "domains":[
+      {
+        "name":"Other Domain",
+        "_links":{
+          "self":{
+            "href":"http://localhost:8080/domains/other"
+          }
+        }
+      },
+      {
+        "name":"AutoTrader",
+        "_links":{
+          "self":{
+            "href":"http://localhost:8080/domains/autotrader"
+          }
+        }
+      }
+    ]
+  },
+  "_links":{
+    "self":{
+      "href":"http://localhost:8080/domains",
+      "templated":false
+    }
+  }
+}

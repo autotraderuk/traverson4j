@@ -1,0 +1,133 @@
+plugins {
+    id "com.jfrog.bintray" version "1.8.0" apply false
+}
+
+allprojects {
+    group = 'uk.co.autotrader'
+    version = "1.0.0"
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'jacoco'
+    apply plugin: 'checkstyle'
+    apply plugin: 'maven'
+    apply plugin: 'findbugs'
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.jfrog.bintray'
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.12',
+                'com.google.guava:guava:18.0',
+                'org.mockito:mockito-core:1.10.19',
+                'org.assertj:assertj-core:1.7.1',
+                'org.apache.commons:commons-lang3:3.4'
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                element = 'CLASS'
+
+                limit {
+                    counter = 'LINE'
+                    value = 'COVEREDRATIO'
+                    minimum = 1
+                }
+
+                limit {
+                    counter = 'BRANCH'
+                    value = 'COVEREDRATIO'
+                    minimum = 1
+                }
+            }
+        }
+    }
+
+    tasks.withType(FindBugs) {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    build {
+        dependsOn('jacocoTestCoverageVerification')
+    }
+
+    checkstyle {
+        configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+        toolVersion = "7.2"
+    }
+
+    jar {
+        from('../LICENSE') {
+            into('META-INF/')
+        }
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+
+    publishing {
+        publications {
+            MavenPublication(MavenPublication) {
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+            }
+        }
+    }
+
+    bintray {
+        user = System.getenv('BINTRAY_USER')
+        key = System.getenv('BINTRAY_KEY')
+        dryRun = true
+        publish = true
+        publications = ['MavenPublication']
+        pkg {
+            repo = 'maven'
+            name = project.name
+            licenses = ['Apache-2.0']
+            vcsUrl = 'https://github.com/autotraderuk/traverson4j.git'
+            version {
+                name = project.version
+            }
+        }
+    }
+}
+
+project(':traverson4j-hc4') {
+    dependencies {
+        compile project(':traverson4j-core')
+    }
+}
+
+project(':traverson4j-jackson2') {
+    dependencies {
+        compile project(':traverson4j-core')
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.6'
+}

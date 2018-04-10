@@ -1,0 +1,42 @@
+{
+  "_links": {
+    "self": {
+      "href": "hal-traverson-builder-data.json"
+    },
+
+    "makes": {
+      "href": "builder-data/makes.json"
+    },
+
+    "vegetables": [
+      {
+        "name": "turnip",
+        "href": "builder-data/turnip.json"
+      },
+      {
+        "name": "parsnip",
+        "href": "invalid"
+      }
+    ]
+  },
+
+  "_embedded": {
+    "vegetables": [
+      {
+        "name": "turnip",
+        "_links":{"self":{"href": "invalid"}}
+      },
+      {
+        "name": "parsnip",
+        "_links":{"self":{"href": "builder-data/parsnip.json"}}
+      }
+    ],
+
+    "ships": [
+      {
+        "name": "tug-boat",
+        "_links":{"self":{"href": "builder-data/tug-boat.json"}}
+      }
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+    "_links": {
+        "self": {"href": "http://self-link"},
+
+        "not-array": {"href": "http://not-array"},
+
+        "section": [
+            {
+                "href": "http://turnip-link",
+                "name": "turnip"
+            },
+            {
+                "href": "http://spatula-link",
+                "name": "spatula"
+            }
+        ],
+
+        "duplicates": [
+            {
+                "href": "http://duplicate-link-1",
+                "name": "dupe"
+            },
+            {
+                "href": "http://duplicate-link-2",
+                "name": "dupe"
+            }
+        ]
+    },
+
+  "_embedded": {
+
+    "not-array":{"_links":{"self":{"href": "http://not-array"}}},
+
+    "section" : [
+      {
+        "name": "turnip",
+        "_links":{"self":{"href": "http://turnip-link"}}
+      },
+      {
+        "name": "spatula",
+        "_links":{"self":{"href": "http://spatula-link"}}
+      }
+    ],
+
+    "duplicates": [
+      {
+        "name": "dupe",
+        "_links":{"self":{"href": "http://duplicate-link-1"}}
+      },
+      {
+        "name": "dupe",
+        "_links":{"self":{"href": "http://duplicate-link-2"}}
+      }
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Domains",
+  "_embedded": {
+    "domains": [
+      {
+        "name": "Other Domain",
+        "_links": {
+          "self": {
+            "href": "http://localhost:8080/domains/other"
+          }
+        }
+      },
+      {
+        "name": "AutoTrader",
+        "_links": {
+          "self": {
+            "href": "http://localhost:8080/domains/autotrader"
+          }
+        }
+      }
+    ],
+    "not-an-array": {
+      "name": "MadeUp",
+      "_links": {
+        "self": {
+          "href": "http://localhost:8080/madeup"
+        }
+      }
+    }
+  },
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/domains"
+    }
+  }
+}
