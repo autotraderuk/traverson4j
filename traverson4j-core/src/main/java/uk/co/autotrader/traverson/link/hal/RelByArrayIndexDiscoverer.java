@@ -15,12 +15,12 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
-public class RelByArrayIndexDiscoverer implements LinkDiscoverer {
+class RelByArrayIndexDiscoverer implements LinkDiscoverer {
     private static final Pattern REL_AND_ARRAY_INDEX = Pattern.compile("(.*)\\[(\\d+)\\]");
 
     private final List<HalEntityResolver> halEntityResolvers;
 
-    public RelByArrayIndexDiscoverer(HalEntityResolver... halEntityResolvers) {
+    RelByArrayIndexDiscoverer(HalEntityResolver... halEntityResolvers) {
         this.halEntityResolvers = asList(halEntityResolvers);
     }
 

@@ -6,11 +6,11 @@ import uk.co.autotrader.traverson.link.LinkDiscoverer;
 
 import static java.util.Collections.emptyList;
 
-public class EmbeddedArrayNameHandler implements LinkDiscoverer {
+class EmbeddedArrayNameHandler implements LinkDiscoverer {
 
     private final LinksRelHandler fromLinks;
 
-    public EmbeddedArrayNameHandler() {
+    EmbeddedArrayNameHandler() {
         this.fromLinks = new LinksRelHandler();
     }
 

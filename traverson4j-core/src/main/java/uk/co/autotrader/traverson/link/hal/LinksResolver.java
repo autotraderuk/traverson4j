@@ -1,8 +1,7 @@
-package uk.co.autotrader.traverson.link.hal.entity;
+package uk.co.autotrader.traverson.link.hal;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import uk.co.autotrader.traverson.link.hal.HalEntityResolver;
 
 import java.util.Map;
 import java.util.SortedSet;
@@ -10,7 +9,7 @@ import java.util.TreeSet;
 
 import static java.util.Collections.singletonMap;
 
-public class LinksResolver implements HalEntityResolver {
+class LinksResolver implements HalEntityResolver {
 
     @Override
     public JSONArray findJSONArrayRelation(JSONObject halResource, String relationType) {

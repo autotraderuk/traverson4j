@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
+import uk.co.autotrader.traverson.link.hal.HalLinkDiscoverer;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

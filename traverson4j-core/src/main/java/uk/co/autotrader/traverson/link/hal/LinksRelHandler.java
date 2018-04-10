@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class LinksRelHandler implements LinkDiscoverer {
+class LinksRelHandler implements LinkDiscoverer {
 
     @Override
     public String findHref(JSONObject resource, String rel) {

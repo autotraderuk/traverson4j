@@ -15,12 +15,12 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
-public class RelByArrayPropertyDiscoverer implements LinkDiscoverer {
+class RelByArrayPropertyDiscoverer implements LinkDiscoverer {
     private static final Pattern RELATION_WITH_PROPERTY_AND_VALUE = Pattern.compile("(.*)\\[(.*):(.*)\\]");
 
     private final List<HalEntityResolver> halEntityResolvers;
 
-    public RelByArrayPropertyDiscoverer(HalEntityResolver... halEntityResolvers) {
+    RelByArrayPropertyDiscoverer(HalEntityResolver... halEntityResolvers) {
         this.halEntityResolvers = asList(halEntityResolvers);
     }
 

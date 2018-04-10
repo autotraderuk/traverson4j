@@ -1,12 +1,7 @@
-package uk.co.autotrader.traverson.link;
+package uk.co.autotrader.traverson.link.hal;
 
 import com.alibaba.fastjson.JSONObject;
-import uk.co.autotrader.traverson.link.hal.EmbeddedArrayNameHandler;
-import uk.co.autotrader.traverson.link.hal.LinksRelHandler;
-import uk.co.autotrader.traverson.link.hal.RelByArrayIndexDiscoverer;
-import uk.co.autotrader.traverson.link.hal.RelByArrayPropertyDiscoverer;
-import uk.co.autotrader.traverson.link.hal.entity.EmbeddedResolver;
-import uk.co.autotrader.traverson.link.hal.entity.LinksResolver;
+import uk.co.autotrader.traverson.link.LinkDiscoverer;
 
 import java.util.Arrays;
 import java.util.List;

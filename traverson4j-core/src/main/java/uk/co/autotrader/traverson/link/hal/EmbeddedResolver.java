@@ -1,15 +1,14 @@
-package uk.co.autotrader.traverson.link.hal.entity;
+package uk.co.autotrader.traverson.link.hal;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import uk.co.autotrader.traverson.link.hal.HalEntityResolver;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class EmbeddedResolver implements HalEntityResolver {
+class EmbeddedResolver implements HalEntityResolver {
     @Override
     public JSONArray findJSONArrayRelation(JSONObject halResource, String relationType) {
         JSONObject embeddedResources = getEmbeddedSection(halResource);

@@ -9,8 +9,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
-import uk.co.autotrader.traverson.link.hal.entity.EmbeddedResolver;
-import uk.co.autotrader.traverson.link.hal.entity.LinksResolver;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

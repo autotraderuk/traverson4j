@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.Map;
 import java.util.SortedSet;
 
-public interface HalEntityResolver {
+interface HalEntityResolver {
 
     JSONArray findJSONArrayRelation(JSONObject halResource, String relationType);
 

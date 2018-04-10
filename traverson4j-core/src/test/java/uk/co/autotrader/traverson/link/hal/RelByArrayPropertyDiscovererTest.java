@@ -10,8 +10,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
-import uk.co.autotrader.traverson.link.hal.entity.EmbeddedResolver;
-import uk.co.autotrader.traverson.link.hal.entity.LinksResolver;
 
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;

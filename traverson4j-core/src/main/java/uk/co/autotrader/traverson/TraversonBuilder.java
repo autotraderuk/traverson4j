@@ -5,7 +5,7 @@ import uk.co.autotrader.traverson.http.AuthCredential;
 import uk.co.autotrader.traverson.exception.IllegalHttpStatusException;
 import uk.co.autotrader.traverson.http.*;
 import uk.co.autotrader.traverson.link.BasicLinkDiscoverer;
-import uk.co.autotrader.traverson.link.HalLinkDiscoverer;
+import uk.co.autotrader.traverson.link.hal.HalLinkDiscoverer;
 import uk.co.autotrader.traverson.link.LinkDiscoverer;
 
 import java.util.*;
