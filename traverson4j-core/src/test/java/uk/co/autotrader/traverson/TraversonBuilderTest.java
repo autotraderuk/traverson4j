@@ -359,7 +359,7 @@ public class TraversonBuilderTest {
         assertThat(request.getMethod()).isEqualTo(Method.GET);
     }
 
-    
+
     @Test
     public void post_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
         when(firstResponse.isSuccessful()).thenReturn(true);

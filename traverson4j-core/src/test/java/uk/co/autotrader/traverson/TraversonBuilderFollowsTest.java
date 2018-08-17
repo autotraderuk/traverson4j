@@ -100,8 +100,7 @@ public class TraversonBuilderFollowsTest {
             this.testSubject.jsonHal()
                     .from("hal-traverson-builder-data.json")
                     .follow("makes[invalid:property]")
-                    .get()
-                    .getResource();
+                    .get();
             fail("Test should throw an exception for an unknown rel");
         } catch (UnknownRelException e) {
             assertThat(e).hasMessageContaining("Rel 'makes' with an item with property 'invalid: property' not found in {")
@@ -127,8 +126,7 @@ public class TraversonBuilderFollowsTest {
             this.testSubject.jsonHal()
                     .from("hal-traverson-builder-data.json")
                     .follow("makes[0]")
-                    .get()
-                    .getResource();
+                    .get();
             fail("Test should throw an exception for an unknown rel");
         } catch (UnknownRelException e) {
             assertThat(e).hasMessageContaining("Rel 'makes' with an item at index '0' not found in {")
