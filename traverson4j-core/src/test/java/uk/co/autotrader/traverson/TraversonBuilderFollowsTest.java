@@ -66,6 +66,7 @@ public class TraversonBuilderFollowsTest {
         JSONObject result = this.testSubject.jsonHal()
                 .from("hal-traverson-builder-data.json")
                 .follow("makes")
+                .get()
                 .getResource();
 
         assertThat(result.toJSONString()).isEqualTo("{\"makes\":\"a bunch of makes.\"}");
@@ -76,6 +77,7 @@ public class TraversonBuilderFollowsTest {
         JSONObject result = this.testSubject.jsonHal()
                 .from("hal-traverson-builder-data.json")
                 .follow("vegetables[name:turnip]")
+                .get()
                 .getResource();
 
         assertThat(result.toJSONString()).isEqualTo("{\"i-am\":\"a turnip.\"}");
@@ -86,6 +88,7 @@ public class TraversonBuilderFollowsTest {
         JSONObject result = this.testSubject.jsonHal()
                 .from("hal-traverson-builder-data.json")
                 .follow("ships[name:tug-boat]")
+                .get()
                 .getResource();
 
         assertThat(result.toJSONString()).isEqualTo("{\"tug-boat\":\"true\"}");
@@ -97,6 +100,7 @@ public class TraversonBuilderFollowsTest {
             this.testSubject.jsonHal()
                     .from("hal-traverson-builder-data.json")
                     .follow("makes[invalid:property]")
+                    .get()
                     .getResource();
             fail("Test should throw an exception for an unknown rel");
         } catch (UnknownRelException e) {
@@ -111,6 +115,7 @@ public class TraversonBuilderFollowsTest {
         JSONObject result = this.testSubject.jsonHal()
                 .from("hal-traverson-builder-data.json")
                 .follow("vegetables[1]")
+                .get()
                 .getResource();
 
         assertThat(result.toJSONString()).isEqualTo("{\"i-am\":\"a parsnip.\"}");
@@ -122,6 +127,7 @@ public class TraversonBuilderFollowsTest {
             this.testSubject.jsonHal()
                     .from("hal-traverson-builder-data.json")
                     .follow("makes[0]")
+                    .get()
                     .getResource();
             fail("Test should throw an exception for an unknown rel");
         } catch (UnknownRelException e) {
@@ -136,6 +142,7 @@ public class TraversonBuilderFollowsTest {
         JSONObject result = this.testSubject.jsonHal()
                 .from("hal-traverson-builder-data.json")
                 .follow("tug-boat")
+                .get()
                 .getResource();
 
         assertThat(result.toJSONString()).isEqualTo("{\"tug-boat\":\"true\"}");
