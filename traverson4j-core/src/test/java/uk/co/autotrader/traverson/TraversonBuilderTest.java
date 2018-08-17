@@ -359,22 +359,6 @@ public class TraversonBuilderTest {
         assertThat(request.getMethod()).isEqualTo(Method.GET);
     }
 
-    @Test
-    public void getResource_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
-        JSONObject secondResource = mock(JSONObject.class);
-        when(firstResponse.isSuccessful()).thenReturn(true);
-        when(firstResponse.getResource()).thenReturn(resource);
-        when(secondResponse.getResource()).thenReturn(secondResource);
-        when(client.execute(reflectionGetRequest(), JSONObject.class)).thenReturn(firstResponse).thenReturn(secondResponse);
-        when(linkDiscoverer.findHref(resource, "rel")).thenReturn("http://localhost/next");
-
-        JSONObject resource = builder.from("http://localhost/").follow("rel").getResource();
-
-        Request request = reflectionGetRequest();
-        assertThat(resource).isEqualTo(secondResource);
-        assertThat(request.getUrl()).isEqualTo("http://localhost/next");
-        assertThat(request.getMethod()).isEqualTo(Method.GET);
-    }
 
     @Test
     public void post_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {

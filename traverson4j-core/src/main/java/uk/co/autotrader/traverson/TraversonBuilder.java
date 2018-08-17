@@ -118,18 +118,6 @@ public class TraversonBuilder {
     }
 
     /**
-     * Navigate the path and get the resource
-     *
-     * @return JSONObject representing end resource
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
-     * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
-     * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
-     */
-    public JSONObject getResource() {
-        return get().getResource();
-    }
-
-    /**
      * Navigate the path and get the response
      *
      * @return Response representing the http response and resource
