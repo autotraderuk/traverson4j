@@ -2,6 +2,7 @@ package uk.co.autotrader.traverson.conversion;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,15 +11,19 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,8 +48,9 @@ public class JacksonResourceConverterTest {
     @Test
     public void convert_GivenJsonStringAndValidStructuredPojo_ReturnsMappedPojo() throws Exception {
         String resourceAsString = Resources.toString(Resources.getResource("hal-embedded.json"), Charset.defaultCharset());
+        InputStream resource = Mockito.spy(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8));
 
-        Domains domains = (Domains) converter.convert(resourceAsString, Domains.class);
+        Domains domains = (Domains) converter.convert(resource, Domains.class);
 
         assertThat(domains.getName()).isEqualTo("Domains");
         List<DomainSummary> domainSummaries = domains.getEmbedded().get("domains");
@@ -54,7 +60,7 @@ public class JacksonResourceConverterTest {
         assertThat(domains.getLinks()).hasSize(1).containsKey("self");
         assertThat(domains.getLinks().get("self").getHref()).isEqualTo("http://localhost:8080/domains");
         assertThat(domains.getLinks().get("self").getTemplated()).isFalse();
-
+        verify(resource).close();
     }
 
     @Test
@@ -75,7 +81,7 @@ public class JacksonResourceConverterTest {
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
 
-        converter.convert(resourceAsString, Domains.class);
+        converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class);
     }
 
     @Test
@@ -96,6 +102,6 @@ public class JacksonResourceConverterTest {
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
 
-        converter.convert(resourceAsString, Domains.class);
+        converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class);
     }
 }

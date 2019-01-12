@@ -1,5 +1,13 @@
 package uk.co.autotrader.traverson.conversion;
 
+
+import org.apache.commons.io.IOUtils;
+import uk.co.autotrader.traverson.exception.ConversionException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 class StringResourceConverter implements ResourceConverter<String> {
 
     @Override
@@ -8,7 +16,11 @@ class StringResourceConverter implements ResourceConverter<String> {
     }
 
     @Override
-    public String convert(String resourceAsString, Class<? extends String> returnType) {
-        return resourceAsString;
+    public String convert(InputStream resource, Class<? extends String> returnType) {
+        try (InputStream streamToProcess = resource) {
+            return IOUtils.toString(streamToProcess, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new ConversionException("Failed to convert the input stream to a string", null, e);
+        }
     }
 }

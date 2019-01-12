@@ -16,13 +16,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConverterTest {
@@ -155,10 +155,10 @@ public class ConverterTest {
     public void toResponse_GivenResponseHasEntity_ConvertsAndSetsResource() throws Exception {
         URI requestUri = new URI("http://localhost");
         String expectedJson = "{'name':'test'}";
-        InputStream inputStream = Mockito.spy(new ByteArrayInputStream(expectedJson.getBytes(StandardCharsets.UTF_8)));
+        InputStream inputStream = Mockito.mock(InputStream.class);
         when(httpResponse.getEntity()).thenReturn(httpEntity);
         when(httpEntity.getContent()).thenReturn(inputStream);
-        when(conversionService.convert(expectedJson, String.class)).thenReturn(expectedJson);
+        when(conversionService.convert(inputStream, String.class)).thenReturn(expectedJson);
         StatusLine statusLine = mock(StatusLine.class);
         when(httpResponse.getStatusLine()).thenReturn(statusLine);
         when(statusLine.getStatusCode()).thenReturn(202);

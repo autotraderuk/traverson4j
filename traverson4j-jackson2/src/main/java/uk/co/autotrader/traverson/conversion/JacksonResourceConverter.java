@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class JacksonResourceConverter implements ResourceConverter<Object> {
 
@@ -19,12 +20,12 @@ public class JacksonResourceConverter implements ResourceConverter<Object> {
     }
 
     @Override
-    public Object convert(String resourceAsString, Class<? extends Object> returnType) {
+    public Object convert(InputStream resource, Class<? extends Object> returnType) {
+        String resourceAsString = null;
         try {
+            resourceAsString = new StringResourceConverter().convert(resource, String.class);
             return objectMapper.readValue(resourceAsString, returnType);
-        } catch (IOException e) {
-            throw new ConversionException("Failed to map object using jackson", resourceAsString, e);
-        } catch (RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             throw new ConversionException("Failed to map object using jackson", resourceAsString, e);
         }
     }

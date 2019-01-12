@@ -2,6 +2,7 @@ package uk.co.autotrader.traverson.conversion;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.assertj.core.data.MapEntry;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
@@ -10,6 +11,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentMatcher;
 import uk.co.autotrader.traverson.exception.ConversionException;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,7 +28,7 @@ public class FastJsonResourceConverterTest {
     }
 
     @Test
-    public void canConvert_GivenJSONObjectClass_ReturnsFalse() throws Exception {
+    public void getDestinationType_ReturnsJSONObject() throws Exception {
         assertThat(converter.getDestinationType()).isEqualTo(JSONObject.class);
     }
 
@@ -33,7 +36,7 @@ public class FastJsonResourceConverterTest {
     public void convert_GivenJsonString_ParsesJsonCorrectly() throws Exception {
         String resourceAsString = "{'name':'test', 'anotherName':'comes before the first one alphabetically'}";
 
-        JSONObject resource = converter.convert(resourceAsString, JSONObject.class);
+        JSONObject resource = converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
 
         assertThat(resource).isNotNull().containsExactly(MapEntry.entry("name", "test"), MapEntry.entry("anotherName", "comes before the first one alphabetically"));
     }
@@ -51,14 +54,14 @@ public class FastJsonResourceConverterTest {
             }
         });
 
-        converter.convert(resourceAsString, JSONObject.class);
+        converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
     }
 
     @Test
     public void convert_GivenEmptyString_ReturnNull() throws Exception {
         String resourceAsString = "";
 
-        JSONObject resource = converter.convert(resourceAsString, JSONObject.class);
+        JSONObject resource = converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
 
         assertThat(resource).isNull();
     }
@@ -67,7 +70,7 @@ public class FastJsonResourceConverterTest {
     public void convert_GivenNullString_ReturnNull() throws Exception {
         String resourceAsString = "";
 
-        JSONObject resource = converter.convert(resourceAsString, JSONObject.class);
+        JSONObject resource = converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
 
         assertThat(resource).isNull();
     }
