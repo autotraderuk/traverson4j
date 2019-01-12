@@ -34,7 +34,7 @@ public class BodyPartEntityConverterTest {
         String content = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
         assertThat(content).matches(Pattern.compile(".*name=\"file\".*", Pattern.DOTALL | Pattern.MULTILINE));
         assertThat(content).matches(Pattern.compile(".*filename=\"filename\".*", Pattern.DOTALL | Pattern.MULTILINE));
-        assertThat(content).matches(Pattern.compile(".*Content-Type: contentType.*", Pattern.DOTALL | Pattern.MULTILINE));
+        assertThat(content).matches(Pattern.compile(".*Content-Type: contenttype.*", Pattern.DOTALL | Pattern.MULTILINE));
         assertThat(content).matches(Pattern.compile(".*data.*", Pattern.DOTALL | Pattern.MULTILINE));
     }
 }
