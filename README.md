@@ -6,11 +6,20 @@ A Java port of the javascript library found https://github.com/basti1302/travers
 
 ## Getting started
 
+We are now hosted on jcenter! 
+
+Gradle:
+```gradle
+repositories {
+    jcenter()
+}
+```
+
 traverson4j comes with a http adapter using Apache Http Components 4. So lets use that...
 
 Gradle:
 ```gradle
-'uk.co.autotrader:traverson4j-hc4:XXX'
+'uk.co.autotrader:traverson4j-hc4:1.0.0-rc.2'
 ```
 
 Maven:
@@ -18,7 +27,7 @@ Maven:
 <dependency>
   <groupId>uk.co.autotrader</groupId>
   <artifactId>traverson4j-hc4</artifactId>
-  <version>XXX</version>
+  <version>1.0.0-rc.2</version>
 </dependency>
 ```
 
@@ -27,7 +36,7 @@ To use the new support for Jackson databind 2, you can include the traverson4j-j
 
 Gradle:
 ```gradle
-'uk.co.autotrader:traverson4j-jackson2:XXX'
+'uk.co.autotrader:traverson4j-jackson2:1.0.0-rc.2'
 ```
 
 Maven:
@@ -35,7 +44,7 @@ Maven:
 <dependency>
   <groupId>uk.co.autotrader</groupId>
   <artifactId>traverson4j-jackson2</artifactId>
-  <version>XXX</version>
+  <version>1.0.0-rc.2</version>
 </dependency>
 ```
 
