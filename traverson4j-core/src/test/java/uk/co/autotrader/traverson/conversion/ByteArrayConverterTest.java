@@ -1,51 +1,50 @@
 package uk.co.autotrader.traverson.conversion;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class StringResourceConverterTest {
-
-    private StringResourceConverter converter;
+public class ByteArrayConverterTest {
+    private ByteArrayConverter converter;
 
     @Before
     public void setUp() throws Exception {
-        converter = new StringResourceConverter();
+        converter = new ByteArrayConverter();
     }
 
     @Test
-    public void getDestinationType_ReturnsString() throws Exception {
-        assertThat(converter.getDestinationType()).isEqualTo(String.class);
+    public void getDestinationType_ReturnsByteArrayClass() throws Exception {
+        assertThat(converter.getDestinationType()).isEqualTo(byte[].class);
     }
 
     @Test
     public void convert_ReturnsTheInputString() throws Exception {
-        String resourceAsString = "My Resource";
-        InputStream inputStream = Mockito.spy(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8));
+        byte[] bytes = new byte[] {1, 2, 3};
+        InputStream inputStream = Mockito.spy(new ByteArrayInputStream(bytes));
 
-        assertThat(converter.convert(inputStream, String.class)).isEqualTo(resourceAsString);
+        assertThat(converter.convert(inputStream, byte[].class)).isEqualTo(bytes);
         verify(inputStream).close();
     }
 
     @Test
     public void convert_WrapsIOExceptionInConversionException() throws Exception {
         InputStream inputStream = Mockito.mock(InputStream.class);
-        when(inputStream.read()).thenThrow(new IOException());
+        when(inputStream.read(any())).thenThrow(new IOException());
 
-        assertThatThrownBy(() -> converter.convert(inputStream, String.class))
+        assertThatThrownBy(() -> converter.convert(inputStream, byte[].class))
                 .isInstanceOf(ConversionException.class)
-                .hasMessage("Failed to convert the input stream to a string");
+                .hasMessage("Failed to convert the input stream to a byte array");
         verify(inputStream).close();
     }
 }

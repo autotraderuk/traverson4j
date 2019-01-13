@@ -1,13 +1,15 @@
 package uk.co.autotrader.traverson.conversion;
 
-class SupportedType {
-    private final String value;
+import java.io.InputStream;
 
-    SupportedType(String value) {
+class SupportedType {
+    private final InputStream value;
+
+    SupportedType(InputStream value) {
         this.value = value;
     }
 
-    public String getValue() {
+    public InputStream getValue() {
         return value;
     }
 }

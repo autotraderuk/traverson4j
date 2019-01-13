@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
+import java.io.InputStream;
+
 class FastJsonResourceConverter implements ResourceConverter<JSONObject> {
 
     @Override
@@ -13,8 +15,10 @@ class FastJsonResourceConverter implements ResourceConverter<JSONObject> {
     }
 
     @Override
-    public JSONObject convert(String resourceAsString, Class<? extends JSONObject> returnType) {
+    public JSONObject convert(InputStream resource, Class<? extends JSONObject> returnType) {
+        String resourceAsString = null;
         try {
+            resourceAsString = new StringResourceConverter().convert(resource, String.class);
             return JSONObject.parseObject(resourceAsString, Feature.OrderedField);
         } catch (JSONException ex) {
             throw new ConversionException("Failed to parse to JSONObject", resourceAsString, ex);

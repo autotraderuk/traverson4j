@@ -1,10 +1,10 @@
 package uk.co.autotrader.traverson.http;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.util.EntityUtils;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
@@ -53,9 +53,9 @@ class Converter {
             response.addResponseHeader(responseHeader.getName(), responseHeader.getValue());
         }
 
-        if (httpResponse.getEntity() != null) {
-            String resourceAsString = EntityUtils.toString(httpResponse.getEntity());
-            response.setResource(conversionService.convert(resourceAsString, returnType));
+        HttpEntity httpEntity = httpResponse.getEntity();
+        if (httpEntity != null) {
+            response.setResource(conversionService.convert(httpEntity.getContent(), returnType));
         }
         return response;
     }
