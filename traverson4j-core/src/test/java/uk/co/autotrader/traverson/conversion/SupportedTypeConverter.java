@@ -1,5 +1,7 @@
 package uk.co.autotrader.traverson.conversion;
 
+import java.io.InputStream;
+
 public class SupportedTypeConverter implements ResourceConverter<SupportedType> {
 
     @Override
@@ -8,7 +10,7 @@ public class SupportedTypeConverter implements ResourceConverter<SupportedType> 
     }
 
     @Override
-    public SupportedType convert(String resourceAsString, Class<? extends SupportedType> returnType) {
-        return new SupportedType(resourceAsString);
+    public SupportedType convert(InputStream resource, Class<? extends SupportedType> returnType) {
+        return new SupportedType(resource);
     }
 }

@@ -2,6 +2,8 @@ package uk.co.autotrader.traverson.conversion;
 
 import uk.co.autotrader.traverson.exception.ConversionException;
 
+import java.io.InputStream;
+
 /**
  * <p>Register instances via META-INF/services/uk.co.autotrader.traverson.conversion.ResourceConverter Service loader config </p>
  * <p>Or register them via ResourceConversionService.addConverter()</p>
@@ -17,10 +19,10 @@ public interface ResourceConverter<T> {
     /**
      * Should only ever throw {@link uk.co.autotrader.traverson.exception.ConversionException}
      *
-     * @param resourceAsString  A complete string of the returned resource, in UTF-8 encoding
+     * @param resource  An InputStream of the resource wanting to be converted. This class should close the inputStream, unless explicitly documented
      * @param returnType the class for the returned object
      * @throws ConversionException if the conversion fails
      * @return instance of returnType
      */
-    T convert(String resourceAsString, Class<? extends T> returnType);
+    T convert(InputStream resource, Class<? extends T> returnType);
 }
