@@ -56,6 +56,7 @@ public class ResourceConversionService {
      * @throws ConversionException if a suitable converter cannot be found or if the converter fails
      * @return instance of the returnType
      */
+    @SuppressWarnings("unchecked")
     public <T> T convert(InputStream resource, Class<T> returnType) {
         Class<? super T> classToConvert = returnType;
         while (classToConvert != null) {

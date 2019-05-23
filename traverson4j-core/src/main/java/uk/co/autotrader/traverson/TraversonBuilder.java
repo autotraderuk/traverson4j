@@ -98,8 +98,9 @@ public class TraversonBuilder {
 
     /**
      * Apply the following basic auth credentials on all http requests
-     * @param username
-     * @param password
+     * @param username the username
+     * @param password the password
+     * @return the current builder inclusive of auth credentials
      */
     public TraversonBuilder withAuth(String username, String password) {
         return withAuth(username, password, null);
@@ -107,10 +108,10 @@ public class TraversonBuilder {
 
     /**
      * Apply the following basic auth credentials for only http requests on the supplied hostname
-     * @param username
-     * @param password
+     * @param username the username
+     * @param password the password
      * @param hostname simple definition of a hostname, e.g. "myservice.autotrader.co.uk"
-     * @return
+     * @return the current builder inclusive of auth credentials
      */
     public TraversonBuilder withAuth(String username, String password, String hostname) {
         this.request.addAuthCredential(new AuthCredential(username, password, hostname));
@@ -121,7 +122,7 @@ public class TraversonBuilder {
      * Navigate the path and get the response
      *
      * @return Response representing the http response and resource
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -132,9 +133,10 @@ public class TraversonBuilder {
     /**
      * Navigate the path and get the response
      *
-     * @param returnType what you want the resource to represented as
+     * @param <T> the class type for Response
+     * @param returnType Class of return type.
      * @return Response representing the http response and resource
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -146,7 +148,7 @@ public class TraversonBuilder {
      * Navigate the path and delete the resource
      *
      * @return Response representing the http response
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -157,9 +159,10 @@ public class TraversonBuilder {
     /**
      * Navigate the path and delete the resource
      *
-     * @param returnType what you want the resource to represented as
+     * @param <T> the class type for Response
+     * @param returnType Class of return type.
      * @return Response representing the http response
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -172,7 +175,7 @@ public class TraversonBuilder {
      *
      * @param body request body to send
      * @return Response representing the http response
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -183,10 +186,11 @@ public class TraversonBuilder {
     /**
      * Navigate the path and post the body to the resource
      *
-     * @param body       request body to send
-     * @param returnType what you want the resource to represented as
+     * @param body request body to send
+     * @param <T> the class type for Response
+     * @param returnType Class of return type.
      * @return Response representing the http response and resource
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -199,7 +203,7 @@ public class TraversonBuilder {
      *
      * @param body request body to send
      * @return Response representing the http response
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -211,10 +215,11 @@ public class TraversonBuilder {
     /**
      * Navigate the path and put the body to the resource
      *
-     * @param body       request body to send
-     * @param returnType what you want the resource to represented as
+     * @param body request body to send
+     * @param <T> the class type for Response
+     * @param returnType Class of return type.
      * @return Response representing the http response
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -227,7 +232,7 @@ public class TraversonBuilder {
      *
      * @param body request body to send
      * @return Response representing the http response
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -238,10 +243,11 @@ public class TraversonBuilder {
     /**
      * Navigate the path and patch the body to the resource
      *
-     * @param body       request body to send
-     * @param returnType what you want the resource to represented as
+     * @param body request body to send
+     * @param <T> the class type for Response
+     * @param returnType Class of return type.
      * @return Response representing the http response
-     * @throws uk.co.autotrader.traverson.exception.UnknownRelException          When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
      * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
      * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
      */
@@ -264,5 +270,4 @@ public class TraversonBuilder {
         request.setMethod(terminalMethod);
         return traversonClient.execute(request, returnType);
     }
-
 }
