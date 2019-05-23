@@ -29,13 +29,11 @@ public class FormDataBody implements Body<FormDataBody.NameValuePair[]> {
     }
 
     /**
-     * The content type for this is null. This is so that the
-     * underlying http client can generate it with the boundary
-     * @return null
+     * @return application/x-www-form-urlencoded
      */
     @Override
     public String getContentType() {
-        return null;
+        return "application/x-www-form-urlencoded";
     }
 
     /**
