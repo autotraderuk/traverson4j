@@ -1,5 +1,6 @@
 package uk.co.autotrader.traverson.http;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -7,13 +8,16 @@ import java.util.Arrays;
  */
 public class FormDataBody implements Body<FormDataBody.NameValuePair[]> {
     private final NameValuePair[] nameValuePairs;
+    private final Charset charset;
 
     /**
      * Constructs a FormDataBody
+     * @param charset see {@link Charset}
      * @param nameValuePairs see {@link NameValuePair}
      */
-    public FormDataBody(NameValuePair... nameValuePairs) {
+    public FormDataBody(Charset charset, NameValuePair... nameValuePairs) {
         this.nameValuePairs = Arrays.copyOf(nameValuePairs, nameValuePairs.length);
+        this.charset = charset;
     }
 
     /**
@@ -32,6 +36,13 @@ public class FormDataBody implements Body<FormDataBody.NameValuePair[]> {
     @Override
     public String getContentType() {
         return null;
+    }
+
+    /**
+     * @return the charset for the request
+     */
+    public Charset getCharset() {
+        return charset;
     }
 
     /**
