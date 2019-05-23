@@ -2,6 +2,7 @@ package uk.co.autotrader.traverson.http.entity;
 
 import org.apache.http.HttpEntity;
 import uk.co.autotrader.traverson.http.Body;
+import uk.co.autotrader.traverson.http.FormDataBody;
 import uk.co.autotrader.traverson.http.TextBody;
 import uk.co.autotrader.traverson.http.SimpleMultipartBody;
 
@@ -15,6 +16,7 @@ public class BodyFactory {
     static {
         register(SimpleMultipartBody.class, new MultipartEntityConverter());
         register(TextBody.class, new TextEntityConverter());
+        register(FormDataBody.class, new FormDataEntityConverter());
     }
 
     public static void register(Class<? extends Body> type, HttpEntityConverter httpEntityConverter) {
