@@ -5,7 +5,7 @@ import com.damnhandy.uri.template.UriTemplate;
 import java.util.List;
 import java.util.Map;
 
-class TemplateUriUtils {
+public class TemplateUriUtils {
 
     String expandTemplateUri(String templateUri, Map<String, List<String>> templateParams) {
         UriTemplate uriTemplate = UriTemplate.fromTemplate(templateUri);

@@ -13,13 +13,13 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-class Converter {
+public class ApacheHttpUriConverter {
 
     private final BodyFactory bodyFactory;
     private final TemplateUriUtils templateUriUtils;
     private final ResourceConversionService conversionService;
 
-    Converter(BodyFactory bodyFactory, TemplateUriUtils templateUriUtils, ResourceConversionService conversionService) {
+    ApacheHttpUriConverter(BodyFactory bodyFactory, TemplateUriUtils templateUriUtils, ResourceConversionService conversionService) {
         this.bodyFactory = bodyFactory;
         this.templateUriUtils = templateUriUtils;
         this.conversionService = conversionService;
