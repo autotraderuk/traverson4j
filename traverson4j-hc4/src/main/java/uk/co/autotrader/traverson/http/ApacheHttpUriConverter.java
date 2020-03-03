@@ -19,7 +19,7 @@ public class ApacheHttpUriConverter {
     private final TemplateUriUtils templateUriUtils;
     private final ResourceConversionService conversionService;
 
-    ApacheHttpUriConverter(BodyFactory bodyFactory, TemplateUriUtils templateUriUtils, ResourceConversionService conversionService) {
+    public ApacheHttpUriConverter(BodyFactory bodyFactory, TemplateUriUtils templateUriUtils, ResourceConversionService conversionService) {
         this.bodyFactory = bodyFactory;
         this.templateUriUtils = templateUriUtils;
         this.conversionService = conversionService;
