@@ -25,7 +25,7 @@ public class ApacheHttpUriConverter {
         this.conversionService = conversionService;
     }
 
-    HttpUriRequest toRequest(Request request) {
+    public HttpUriRequest toRequest(Request request) {
         Map<String, List<String>> templateParams = request.getTemplateParams();
         String uri = templateUriUtils.expandTemplateUri(request.getUrl(), templateParams);
 
@@ -45,7 +45,7 @@ public class ApacheHttpUriConverter {
     }
 
 
-    <T> Response<T> toResponse(CloseableHttpResponse httpResponse, URI requestUri, Class<T> returnType) throws IOException {
+    public <T> Response<T> toResponse(CloseableHttpResponse httpResponse, URI requestUri, Class<T> returnType) throws IOException {
         Response<T> response = new Response<T>();
         response.setUri(requestUri);
         response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
