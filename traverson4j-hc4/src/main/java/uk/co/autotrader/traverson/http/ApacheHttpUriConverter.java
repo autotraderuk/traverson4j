@@ -13,19 +13,19 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-class Converter {
+public class ApacheHttpUriConverter {
 
     private final BodyFactory bodyFactory;
     private final TemplateUriUtils templateUriUtils;
     private final ResourceConversionService conversionService;
 
-    Converter(BodyFactory bodyFactory, TemplateUriUtils templateUriUtils, ResourceConversionService conversionService) {
+    public ApacheHttpUriConverter(BodyFactory bodyFactory, TemplateUriUtils templateUriUtils, ResourceConversionService conversionService) {
         this.bodyFactory = bodyFactory;
         this.templateUriUtils = templateUriUtils;
         this.conversionService = conversionService;
     }
 
-    HttpUriRequest toRequest(Request request) {
+    public HttpUriRequest toRequest(Request request) {
         Map<String, List<String>> templateParams = request.getTemplateParams();
         String uri = templateUriUtils.expandTemplateUri(request.getUrl(), templateParams);
 
@@ -45,7 +45,7 @@ class Converter {
     }
 
 
-    <T> Response<T> toResponse(CloseableHttpResponse httpResponse, URI requestUri, Class<T> returnType) throws IOException {
+    public <T> Response<T> toResponse(CloseableHttpResponse httpResponse, URI requestUri, Class<T> returnType) throws IOException {
         Response<T> response = new Response<T>();
         response.setUri(requestUri);
         response.setStatusCode(httpResponse.getStatusLine().getStatusCode());

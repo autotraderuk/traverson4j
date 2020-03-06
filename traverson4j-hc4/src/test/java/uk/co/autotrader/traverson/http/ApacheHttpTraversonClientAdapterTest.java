@@ -35,7 +35,7 @@ public class ApacheHttpTraversonClientAdapterTest {
     @Mock
     private CloseableHttpClient httpClient;
     @Mock
-    private Converter converter;
+    private ApacheHttpUriConverter apacheHttpUriConverter;
     @Mock
     private HttpUriRequest httpRequest;
     @Mock
@@ -51,12 +51,12 @@ public class ApacheHttpTraversonClientAdapterTest {
     public void setUp() throws Exception {
         URI uri = new URI("http://localhost");
         clientAdapter = new ApacheHttpTraversonClientAdapter(httpClient);
-        FieldUtils.writeField(clientAdapter, "converter", converter, true);
+        FieldUtils.writeField(clientAdapter, "apacheHttpUriConverter", apacheHttpUriConverter, true);
         request = new Request();
         expectedResponse = new Response<JSONObject>();
         when(httpRequest.getURI()).thenReturn(uri);
-        when(converter.toRequest(request)).thenReturn(httpRequest);
-        when(converter.toResponse(httpResponse, uri, JSONObject.class)).thenReturn(expectedResponse);
+        when(apacheHttpUriConverter.toRequest(request)).thenReturn(httpRequest);
+        when(apacheHttpUriConverter.toResponse(httpResponse, uri, JSONObject.class)).thenReturn(expectedResponse);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ApacheHttpTraversonClientAdapterTest {
     @Test
     public void execute_GivenIOExceptionIsThrown_WrapsInTraversonException() throws Exception {
         when(httpClient.execute(eq(httpRequest), any(HttpClientContext.class))).thenReturn(httpResponse);
-        when(converter.toResponse(httpResponse, httpRequest.getURI(), JSONObject.class)).thenThrow(new IOException());
+        when(apacheHttpUriConverter.toResponse(httpResponse, httpRequest.getURI(), JSONObject.class)).thenThrow(new IOException());
         expectedException.expect(HttpException.class);
 
         clientAdapter.execute(request, JSONObject.class);
