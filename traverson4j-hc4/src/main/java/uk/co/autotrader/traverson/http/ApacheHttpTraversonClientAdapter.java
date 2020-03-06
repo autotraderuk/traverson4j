@@ -20,7 +20,7 @@ import java.io.IOException;
 public class ApacheHttpTraversonClientAdapter implements TraversonClient {
 
     private final CloseableHttpClient adapterClient;
-    private final Converter converter;
+    private final ApacheHttpUriConverter apacheHttpUriConverter;
 
 
     public ApacheHttpTraversonClientAdapter() {
@@ -29,12 +29,12 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
 
     public ApacheHttpTraversonClientAdapter(CloseableHttpClient client) {
         this.adapterClient = client;
-        this.converter = new Converter(new BodyFactory(), new TemplateUriUtils(), ResourceConversionService.getInstance());
+        this.apacheHttpUriConverter = new ApacheHttpUriConverter(new BodyFactory(), new TemplateUriUtils(), ResourceConversionService.getInstance());
     }
 
     @Override
     public <T> Response<T> execute(Request request, Class<T> returnType) {
-        HttpUriRequest httpUriRequest = converter.toRequest(request);
+        HttpUriRequest httpUriRequest = apacheHttpUriConverter.toRequest(request);
 
         HttpClientContext clientContext = HttpClientContext.create();
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -52,7 +52,7 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
         CloseableHttpResponse httpResponse = null;
         try {
             httpResponse = adapterClient.execute(httpUriRequest, clientContext);
-            return converter.toResponse(httpResponse, httpUriRequest.getURI(), returnType);
+            return apacheHttpUriConverter.toResponse(httpResponse, httpUriRequest.getURI(), returnType);
         } catch (IOException e) {
             throw new HttpException("Error with httpClient", e);
         } finally {

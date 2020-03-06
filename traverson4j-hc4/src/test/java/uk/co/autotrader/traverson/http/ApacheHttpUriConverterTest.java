@@ -25,8 +25,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ConverterTest {
-    private Converter converter;
+public class ApacheHttpUriConverterTest {
+    private ApacheHttpUriConverter apacheHttpUriConverter;
     @Mock
     private BodyFactory bodyFactory;
     @Mock
@@ -40,7 +40,7 @@ public class ConverterTest {
 
     @Before
     public void setUp() throws Exception {
-        converter = new Converter(bodyFactory, uriUtils, conversionService);
+        apacheHttpUriConverter = new ApacheHttpUriConverter(bodyFactory, uriUtils, conversionService);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ConverterTest {
         Request request = new Request();
         request.setMethod(Method.PATCH);
 
-        HttpUriRequest uriRequest = converter.toRequest(request);
+        HttpUriRequest uriRequest = apacheHttpUriConverter.toRequest(request);
 
         assertThat(uriRequest.getMethod()).isEqualTo("PATCH");
     }
@@ -61,7 +61,7 @@ public class ConverterTest {
         request.setUrl(url);
         when(uriUtils.expandTemplateUri(url, request.getTemplateParams())).thenReturn(url);
 
-        HttpUriRequest uriRequest = converter.toRequest(request);
+        HttpUriRequest uriRequest = apacheHttpUriConverter.toRequest(request);
 
         assertThat(uriRequest.getURI().toASCIIString()).isEqualTo(url);
     }
@@ -76,7 +76,7 @@ public class ConverterTest {
         request.addQueryParam("key2", "value2");
         when(uriUtils.expandTemplateUri(url, request.getTemplateParams())).thenReturn(url);
 
-        HttpUriRequest uriRequest = converter.toRequest(request);
+        HttpUriRequest uriRequest = apacheHttpUriConverter.toRequest(request);
 
         assertThat(uriRequest.getURI().toASCIIString()).isEqualTo("http://localhost:8080?key1=value1&key2=value2");
     }
@@ -91,7 +91,7 @@ public class ConverterTest {
         request.addTemplateParam("tmp2", "123");
         when(uriUtils.expandTemplateUri(url, request.getTemplateParams())).thenReturn("http://localhost:8080/abc/stuff?tmp2=123");
 
-        HttpUriRequest uriRequest = converter.toRequest(request);
+        HttpUriRequest uriRequest = apacheHttpUriConverter.toRequest(request);
 
         assertThat(uriRequest.getURI().toASCIIString()).isEqualTo("http://localhost:8080/abc/stuff?tmp2=123");
         verify(uriUtils).expandTemplateUri(url, request.getTemplateParams());
@@ -104,7 +104,7 @@ public class ConverterTest {
         request.addHeader("header1", "value1");
         request.addHeader("header2", "value2");
 
-        HttpUriRequest uriRequest = converter.toRequest(request);
+        HttpUriRequest uriRequest = apacheHttpUriConverter.toRequest(request);
 
         assertThat(uriRequest.getFirstHeader("header1").getValue()).isEqualTo("value1");
         assertThat(uriRequest.getFirstHeader("header2").getValue()).isEqualTo("value2");
@@ -116,7 +116,7 @@ public class ConverterTest {
         request.setMethod(Method.GET);
         request.setAcceptMimeType("application/json");
 
-        HttpUriRequest uriRequest = converter.toRequest(request);
+        HttpUriRequest uriRequest = apacheHttpUriConverter.toRequest(request);
 
         assertThat(uriRequest.getFirstHeader("Accept").getValue()).isEqualTo("application/json");
     }
@@ -129,7 +129,7 @@ public class ConverterTest {
         request.setBody(body);
         when(bodyFactory.toEntity(body)).thenReturn(httpEntity);
 
-        HttpEntityEnclosingRequestBase uriRequest = (HttpEntityEnclosingRequestBase) converter.toRequest(request);
+        HttpEntityEnclosingRequestBase uriRequest = (HttpEntityEnclosingRequestBase) apacheHttpUriConverter.toRequest(request);
 
         assertThat(uriRequest.getEntity()).isEqualTo(httpEntity);
     }
@@ -142,7 +142,7 @@ public class ConverterTest {
         when(statusLine.getStatusCode()).thenReturn(200);
         when(httpResponse.getAllHeaders()).thenReturn(new Header[]{new BasicHeader("Location", "http://localhost/new")});
 
-        Response<String> response = converter.toResponse(httpResponse, requestUri, String.class);
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, requestUri, String.class);
 
         assertThat(response).isNotNull();
         assertThat(response.getUri()).isEqualTo(requestUri);
@@ -164,7 +164,7 @@ public class ConverterTest {
         when(statusLine.getStatusCode()).thenReturn(202);
         when(httpResponse.getAllHeaders()).thenReturn(new Header[0]);
 
-        Response<String> response = converter.toResponse(httpResponse, requestUri, String.class);
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, requestUri, String.class);
 
         assertThat(response.getResource()).isEqualTo(expectedJson);
     }
