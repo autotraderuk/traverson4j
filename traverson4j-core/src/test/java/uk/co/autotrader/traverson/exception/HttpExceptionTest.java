@@ -17,4 +17,11 @@ public class HttpExceptionTest {
         assertThat(exception).hasMessage("My Message")
                 .hasCauseExactlyInstanceOf(IOException.class);
     }
+
+    @Test
+    public void init_OverridesMessageConstructor() throws Exception {
+        HttpException exception = new HttpException("Just a single, lonely message");
+
+        assertThat(exception).hasMessage("Just a single, lonely message");
+    }
 }
