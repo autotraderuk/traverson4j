@@ -2,4 +2,6 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:4.5.6',
             'org.apache.httpcomponents:httpmime:4.5.6',
             'com.damnhandy:handy-uri-templates:2.1.2'
+
+    testCompile "com.github.tomakehurst:wiremock-jre8:2.27.0"
 }

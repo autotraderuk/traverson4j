@@ -114,7 +114,19 @@ public class TraversonBuilder {
      * @return the current builder inclusive of auth credentials
      */
     public TraversonBuilder withAuth(String username, String password, String hostname) {
-        this.request.addAuthCredential(new AuthCredential(username, password, hostname));
+        return withAuth(username, password, hostname, false);
+    }
+
+    /**
+     * Apply the following basic auth credentials for only http requests on the supplied hostname
+     * @param username the username
+     * @param password the password
+     * @param hostname simple definition of a hostname, e.g. "myservice.autotrader.co.uk"
+     * @param preemptiveAuthentication when true, we preemptively send the username and password to the server instead of reacting to a unauthorized/401 response
+     * @return the current builder inclusive of auth credentials
+     */
+    public TraversonBuilder withAuth(String username, String password, String hostname, boolean preemptiveAuthentication) {
+        this.request.addAuthCredential(new AuthCredential(username, password, hostname, preemptiveAuthentication));
         return this;
     }
 

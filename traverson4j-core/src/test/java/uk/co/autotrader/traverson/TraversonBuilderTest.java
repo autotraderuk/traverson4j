@@ -206,6 +206,7 @@ public class TraversonBuilderTest {
         assertThat(credential.getUsername()).isEqualTo("user");
         assertThat(credential.getPassword()).isEqualTo("password");
         assertThat(credential.getHostname()).isNull();
+        assertThat(credential.isPreemptiveAuthentication()).isFalse();
     }
 
     @Test
@@ -218,6 +219,20 @@ public class TraversonBuilderTest {
         assertThat(credential.getUsername()).isEqualTo("user");
         assertThat(credential.getPassword()).isEqualTo("password");
         assertThat(credential.getHostname()).isEqualTo("autotrader.co.uk");
+        assertThat(credential.isPreemptiveAuthentication()).isFalse();
+    }
+
+    @Test
+    public void withAuth_SetsCredentialsIncludingPreemptiveAuthentication() throws Exception {
+        assertThat(builder.withAuth("user", "password", "autotrader.co.uk", true)).isEqualTo(builder);
+        List<AuthCredential> authCredentials = reflectionGetRequest().getAuthCredentials();
+
+        assertThat(authCredentials).hasSize(1);
+        AuthCredential credential = authCredentials.get(0);
+        assertThat(credential.getUsername()).isEqualTo("user");
+        assertThat(credential.getPassword()).isEqualTo("password");
+        assertThat(credential.getHostname()).isEqualTo("autotrader.co.uk");
+        assertThat(credential.isPreemptiveAuthentication()).isTrue();
     }
 
     @Test

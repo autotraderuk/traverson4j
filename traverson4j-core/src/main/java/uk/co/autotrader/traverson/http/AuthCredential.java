@@ -2,14 +2,16 @@ package uk.co.autotrader.traverson.http;
 
 public class AuthCredential {
 
-    private String username;
-    private String password;
-    private String hostname;
+    private final String username;
+    private final String password;
+    private final String hostname;
+    private final boolean preemptiveAuthentication;
 
-    public AuthCredential(String username, String password, String hostname) {
+    public AuthCredential(String username, String password, String hostname, boolean preemptiveAuthentication) {
         this.username = username;
         this.password = password;
         this.hostname = hostname;
+        this.preemptiveAuthentication = preemptiveAuthentication;
     }
 
     public String getUsername() {
@@ -24,4 +26,7 @@ public class AuthCredential {
         return hostname;
     }
 
+    public boolean isPreemptiveAuthentication() {
+        return preemptiveAuthentication;
+    }
 }
