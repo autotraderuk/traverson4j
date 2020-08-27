@@ -4,10 +4,13 @@ import com.alibaba.fastjson.util.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -38,17 +41,23 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
 
         HttpClientContext clientContext = HttpClientContext.create();
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        AuthCache authCache = new BasicAuthCache();
 
         for (AuthCredential authCredential : request.getAuthCredentials()) {
             UsernamePasswordCredentials userPassword = new UsernamePasswordCredentials(authCredential.getUsername(), authCredential.getPassword());
             AuthScope scope = AuthScope.ANY;
             if (authCredential.getHostname() != null) {
-               scope = new AuthScope(HttpHost.create(authCredential.getHostname()));
+                HttpHost target = HttpHost.create(authCredential.getHostname());
+                scope = new AuthScope(target);
+                if (authCredential.isPreemptiveAuthentication()) {
+                    authCache.put(target, new BasicScheme());
+                }
             }
             credentialsProvider.setCredentials(scope, userPassword);
         }
 
         clientContext.setCredentialsProvider(credentialsProvider);
+        clientContext.setAuthCache(authCache);
         CloseableHttpResponse httpResponse = null;
         try {
             httpResponse = adapterClient.execute(httpUriRequest, clientContext);

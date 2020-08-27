@@ -82,7 +82,7 @@ public class ApacheHttpTraversonClientAdapterTest {
     @Test
     public void execute_GivenRequestWithAuthCredentials() throws Exception {
         when(httpClient.execute(eq(httpRequest), clientContextCaptor.capture())).thenReturn(httpResponse);
-        request.addAuthCredential(new AuthCredential("user", "password", null));
+        request.addAuthCredential(new AuthCredential("user", "password", null, false));
 
         Response<JSONObject> response = clientAdapter.execute(request, JSONObject.class);
 
@@ -97,7 +97,7 @@ public class ApacheHttpTraversonClientAdapterTest {
     @Test
     public void execute_GivenRequestWithScopedAuthCredentials() throws Exception {
         when(httpClient.execute(eq(httpRequest), clientContextCaptor.capture())).thenReturn(httpResponse);
-        request.addAuthCredential(new AuthCredential("user", "password", "myhost.autotrader.co.uk"));
+        request.addAuthCredential(new AuthCredential("user", "password", "myhost.autotrader.co.uk", false));
 
         Response<JSONObject> response = clientAdapter.execute(request, JSONObject.class);
 
@@ -112,9 +112,9 @@ public class ApacheHttpTraversonClientAdapterTest {
     @Test
     public void execute_GivenMultipleAuthCredentials() throws Exception {
         when(httpClient.execute(eq(httpRequest), clientContextCaptor.capture())).thenReturn(httpResponse);
-        request.addAuthCredential(new AuthCredential("user", "password", "myhost.autotrader.co.uk"));
-        request.addAuthCredential(new AuthCredential("user2", "password2", "myhost.autotrader.co.uk"));
-        request.addAuthCredential(new AuthCredential("user3", "password3", null));
+        request.addAuthCredential(new AuthCredential("user", "password", "myhost.autotrader.co.uk", false));
+        request.addAuthCredential(new AuthCredential("user2", "password2", "myhost.autotrader.co.uk", false));
+        request.addAuthCredential(new AuthCredential("user3", "password3", null, false));
 
         Response<JSONObject> response = clientAdapter.execute(request, JSONObject.class);
 
