@@ -8,11 +8,11 @@ public class Request {
     private String url;
     private Method method;
     private String acceptMimeType;
-    private Map<String, String> headers;
-    private Map<String, List<String>> queryParameters;
-    private Map<String, List<String>> templateParams;
+    private final Map<String, String> headers;
+    private final Map<String, List<String>> queryParameters;
+    private final Map<String, List<String>> templateParams;
     private Body body;
-    private List<AuthCredential> authCredentials;
+    private final List<AuthCredential> authCredentials;
 
     public Request() {
         queryParameters = new HashMap<>();

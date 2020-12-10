@@ -15,18 +15,18 @@ repositories {
 }
 ```
 
-traverson4j comes with a http adapter using Apache Http Components 4. So lets use that...
+traverson4j comes with a http adapter using Apache Http Components 5. So lets use that...
 
 Gradle:
 ```gradle
-'uk.co.autotrader:traverson4j-hc4:1.0.0-rc.2'
+'uk.co.autotrader:traverson4j-hc5:1.0.0-rc.2'
 ```
 
 Maven:
 ```xml
 <dependency>
   <groupId>uk.co.autotrader</groupId>
-  <artifactId>traverson4j-hc4</artifactId>
+  <artifactId>traverson4j-hc5</artifactId>
   <version>1.0.0-rc.2</version>
 </dependency>
 ```
