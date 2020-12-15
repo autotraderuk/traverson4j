@@ -19,7 +19,6 @@ import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 
 public class ApacheHttpTraversonClientAdapter implements TraversonClient {
 
@@ -44,23 +43,7 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         AuthCache authCache = new BasicAuthCache();
 
-        setUserCredentialsAndAuthCache(request.getAuthCredentials(), credentialsProvider, authCache);
-
-        clientContext.setCredentialsProvider(credentialsProvider);
-        clientContext.setAuthCache(authCache);
-        CloseableHttpResponse httpResponse = null;
-        try {
-            httpResponse = adapterClient.execute(httpRequest, clientContext);
-            return apacheHttpUriConverter.toResponse(httpResponse, httpRequest.getUri(), returnType);
-        } catch (IOException | URISyntaxException e) {
-            throw new HttpException("Error with httpClient", e);
-        } finally {
-            IOUtils.close(httpResponse);
-        }
-    }
-
-    private void setUserCredentialsAndAuthCache(List<AuthCredential> authCredentialList, BasicCredentialsProvider credentialsProvider, AuthCache authCache) {
-        for (AuthCredential authCredential : authCredentialList) {
+        for (AuthCredential authCredential : request.getAuthCredentials()) {
             UsernamePasswordCredentials userPassword = new UsernamePasswordCredentials(authCredential.getUsername(), authCredential.getPassword().toCharArray());
             AuthScope authScope = new AuthScope(null, null, -1, null, null);
             if (authCredential.getHostname() != null) {
@@ -81,6 +64,18 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
             }
 
             credentialsProvider.setCredentials(authScope, userPassword);
+        }
+
+        clientContext.setCredentialsProvider(credentialsProvider);
+        clientContext.setAuthCache(authCache);
+        CloseableHttpResponse httpResponse = null;
+        try {
+            httpResponse = adapterClient.execute(httpRequest, clientContext);
+            return apacheHttpUriConverter.toResponse(httpResponse, httpRequest.getUri(), returnType);
+        } catch (IOException | URISyntaxException e) {
+            throw new HttpException("Error with httpClient", e);
+        } finally {
+            IOUtils.close(httpResponse);
         }
     }
 }
