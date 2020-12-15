@@ -9,10 +9,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.io.IOException;
@@ -36,12 +35,12 @@ public class JacksonResourceConverterTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         converter = new JacksonResourceConverter();
     }
 
     @Test
-    public void canConvert_ReturnsTrue() throws Exception {
+    public void canConvert_ReturnsTrue() {
         assertThat(converter.getDestinationType()).isEqualTo(Object.class);
     }
 
@@ -91,13 +90,10 @@ public class JacksonResourceConverterTest {
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(runtimeException);
         expectedException.expect(ConversionException.class);
         expectedException.expectCause(equalTo(runtimeException));
-        expectedException.expect(new ArgumentMatcher() {
-            @Override
-            public boolean matches(Object item) {
-                ConversionException ex = (ConversionException) item;
-                return ex.getResourceAsString().equals(resourceAsString);
-            }
-        });
+//        expectedException.expect((ArgumentMatcher) item -> {
+//            ConversionException ex = (ConversionException) item;
+//            return ex.getResourceAsString().equals(resourceAsString);
+//        });
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);

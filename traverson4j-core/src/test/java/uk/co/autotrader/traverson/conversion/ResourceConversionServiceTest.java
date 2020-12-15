@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.io.ByteArrayInputStream;
@@ -51,7 +51,7 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void addConverter_RegistersTheConverterForUseLater() throws Exception {
+    public void addConverter_RegistersTheConverterForUseLater() {
 
         SupportedType result = service.convert(inputStream, SupportedType.class);
 

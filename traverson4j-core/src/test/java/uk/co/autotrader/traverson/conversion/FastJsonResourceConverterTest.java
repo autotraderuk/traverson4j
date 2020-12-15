@@ -23,17 +23,17 @@ public class FastJsonResourceConverterTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         converter = new FastJsonResourceConverter();
     }
 
     @Test
-    public void getDestinationType_ReturnsJSONObject() throws Exception {
+    public void getDestinationType_ReturnsJSONObject() {
         assertThat(converter.getDestinationType()).isEqualTo(JSONObject.class);
     }
 
     @Test
-    public void convert_GivenJsonString_ParsesJsonCorrectly() throws Exception {
+    public void convert_GivenJsonString_ParsesJsonCorrectly() {
         String resourceAsString = "{'name':'test', 'anotherName':'comes before the first one alphabetically'}";
 
         JSONObject resource = converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
@@ -42,7 +42,7 @@ public class FastJsonResourceConverterTest {
     }
 
     @Test
-    public void convert_GivenXMLString_ThrowsConversionException() throws Exception {
+    public void convert_GivenXMLString_ThrowsConversionException() {
         final String resourceAsString = "<xml><_links><self><href>http://localhost</href></self></_links></xml>";
         expectedException.expect(ConversionException.class);
         expectedException.expectCause(IsInstanceOf.<Throwable>instanceOf(JSONException.class));
@@ -58,7 +58,7 @@ public class FastJsonResourceConverterTest {
     }
 
     @Test
-    public void convert_GivenEmptyString_ReturnNull() throws Exception {
+    public void convert_GivenEmptyString_ReturnNull() {
         String resourceAsString = "";
 
         JSONObject resource = converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
@@ -67,7 +67,7 @@ public class FastJsonResourceConverterTest {
     }
 
     @Test
-    public void convert_GivenNullString_ReturnNull() throws Exception {
+    public void convert_GivenNullString_ReturnNull() {
         String resourceAsString = "";
 
         JSONObject resource = converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);

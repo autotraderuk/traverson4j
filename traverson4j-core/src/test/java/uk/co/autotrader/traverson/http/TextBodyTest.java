@@ -3,7 +3,7 @@ package uk.co.autotrader.traverson.http;
 import com.google.common.base.Charsets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

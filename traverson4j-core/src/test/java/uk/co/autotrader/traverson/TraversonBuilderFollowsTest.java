@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 import uk.co.autotrader.traverson.http.Request;
@@ -38,7 +38,7 @@ public class TraversonBuilderFollowsTest {
                 new Answer<Response<JSONObject>>() {
                     @Override
                     public Response<JSONObject> answer(InvocationOnMock invocation) throws Throwable {
-                        Request request = invocation.getArgumentAt(0, Request.class);
+                        Request request = invocation.getArgument(0, Request.class);
                         JSONObject resource = getJsonResource(request.getUrl());
 
                         Response<JSONObject> response = new Response<JSONObject>();
@@ -73,7 +73,7 @@ public class TraversonBuilderFollowsTest {
     }
 
     @Test
-    public void follows_GivenRelByPropertyMatchingBothLinksAndEmbedded_FollowsLinkInLinksBlock() throws Exception {
+    public void follows_GivenRelByPropertyMatchingBothLinksAndEmbedded_FollowsLinkInLinksBlock() {
         JSONObject result = this.testSubject.jsonHal()
                 .from("hal-traverson-builder-data.json")
                 .follow("vegetables[name:turnip]")
@@ -84,7 +84,7 @@ public class TraversonBuilderFollowsTest {
     }
 
     @Test
-    public void follows_GivenRelByProperty_FollowsLinkInEmbeddedBlock() throws Exception {
+    public void follows_GivenRelByProperty_FollowsLinkInEmbeddedBlock() {
         JSONObject result = this.testSubject.jsonHal()
                 .from("hal-traverson-builder-data.json")
                 .follow("ships[name:tug-boat]")

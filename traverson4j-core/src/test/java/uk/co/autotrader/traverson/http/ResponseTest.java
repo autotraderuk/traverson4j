@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.URI;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void isSuccessful_Given404StatusCode_ReturnsFalse() throws Exception {
+    public void isSuccessful_Given404StatusCode_ReturnsFalse() {
         Response response = new Response();
         response.setStatusCode(404);
 
@@ -50,7 +50,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void isSuccessful_Given302StatusCode_ReturnsFalse() throws Exception {
+    public void isSuccessful_Given302StatusCode_ReturnsFalse() {
         Response response = new Response();
         response.setStatusCode(302);
 
@@ -58,7 +58,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void isSuccessful_Given201StatusCode_ReturnsTrue() throws Exception {
+    public void isSuccessful_Given201StatusCode_ReturnsTrue() {
         Response response = new Response();
         response.setStatusCode(201);
 
@@ -66,7 +66,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void addResponseHeader_AppendsTheUniqueHeaders() throws Exception {
+    public void addResponseHeader_AppendsTheUniqueHeaders() {
         Response<?> response = new Response();
         response.addResponseHeader("key1", "value1");
         response.addResponseHeader("key2", "value2");

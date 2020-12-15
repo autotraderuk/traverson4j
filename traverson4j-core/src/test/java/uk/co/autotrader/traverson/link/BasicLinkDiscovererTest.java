@@ -6,7 +6,7 @@ import com.google.common.io.Resources;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 
 import java.nio.charset.Charset;

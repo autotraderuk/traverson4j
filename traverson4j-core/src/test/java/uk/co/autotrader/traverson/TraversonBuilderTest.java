@@ -11,13 +11,12 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import uk.co.autotrader.traverson.http.AuthCredential;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.IncompleteTraversalException;
 import uk.co.autotrader.traverson.http.*;
 import uk.co.autotrader.traverson.link.BasicLinkDiscoverer;
-import uk.co.autotrader.traverson.link.hal.HalLinkDiscoverer;
 import uk.co.autotrader.traverson.link.LinkDiscoverer;
+import uk.co.autotrader.traverson.link.hal.HalLinkDiscoverer;
 
 import java.net.URI;
 import java.util.*;
