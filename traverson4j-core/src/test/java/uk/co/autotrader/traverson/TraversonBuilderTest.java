@@ -24,7 +24,7 @@ import java.util.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -439,7 +439,6 @@ public class TraversonBuilderTest {
         when(firstResponse.getUri()).thenReturn(URI.create("http://brokenurl.com/not_found"));
         when(firstResponse.isSuccessful()).thenReturn(false);
         when(firstResponse.getStatusCode()).thenReturn(404);
-        when(firstResponse.getResource()).thenReturn(resource);
         when(client.execute(reflectionGetRequest(), JSONObject.class)).thenReturn(firstResponse);
         exception.expect(IncompleteTraversalException.class);
         exception.expectMessage("Received status code 404 from url http://brokenurl.com/not_found");
