@@ -90,10 +90,10 @@ public class JacksonResourceConverterTest {
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(runtimeException);
         expectedException.expect(ConversionException.class);
         expectedException.expectCause(equalTo(runtimeException));
-//        expectedException.expect((ArgumentMatcher) item -> {
-//            ConversionException ex = (ConversionException) item;
-//            return ex.getResourceAsString().equals(resourceAsString);
-//        });
+        expectedException.expect((ArgumentMatcher) item -> {
+            ConversionException ex = (ConversionException) item;
+            return ex.getResourceAsString().equals(resourceAsString);
+        });
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
