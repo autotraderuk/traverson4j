@@ -4,12 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -34,6 +35,16 @@ public class JacksonResourceConverterTest {
     private ObjectMapper objectMapper;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+
+    private final BaseMatcher<Object> matcher = new BaseMatcher<Object>() {
+        @Override
+        public void describeTo(Description description) { }
+        @Override
+        public boolean matches(Object item) {
+            ConversionException ex = (ConversionException) item;
+            return ex.getResourceAsString().equals("{}");
+        }
+    };
 
     @Before
     public void setUp() {
@@ -70,13 +81,7 @@ public class JacksonResourceConverterTest {
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(ioException);
         expectedException.expect(ConversionException.class);
         expectedException.expectCause(equalTo(ioException));
-        expectedException.expect(new ArgumentMatcher() {
-            @Override
-            public boolean matches(Object item) {
-                ConversionException ex = (ConversionException) item;
-                return ex.getResourceAsString().equals(resourceAsString);
-            }
-        });
+        expectedException.expect(matcher);
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
@@ -91,13 +96,7 @@ public class JacksonResourceConverterTest {
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(runtimeException);
         expectedException.expect(ConversionException.class);
         expectedException.expectCause(equalTo(runtimeException));
-        expectedException.expect(new ArgumentMatcher() {
-            @Override
-            public boolean matches(Object item) {
-                ConversionException ex = (ConversionException) item;
-                return ex.getResourceAsString().equals(resourceAsString);
-            }
-        });
+        expectedException.expect(matcher);
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
