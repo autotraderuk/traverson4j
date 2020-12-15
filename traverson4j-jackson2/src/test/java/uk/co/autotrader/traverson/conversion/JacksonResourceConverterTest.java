@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -90,9 +91,12 @@ public class JacksonResourceConverterTest {
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(runtimeException);
         expectedException.expect(ConversionException.class);
         expectedException.expectCause(equalTo(runtimeException));
-        expectedException.expect((ArgumentMatcher) item -> {
-            ConversionException ex = (ConversionException) item;
-            return ex.getResourceAsString().equals(resourceAsString);
+        expectedException.expect(new ArgumentMatcher() {
+            @Override
+            public boolean matches(Object item) {
+                ConversionException ex = (ConversionException) item;
+                return ex.getResourceAsString().equals(resourceAsString);
+            }
         });
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
