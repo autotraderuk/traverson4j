@@ -24,6 +24,7 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
 
     private final CloseableHttpClient adapterClient;
     private final ApacheHttpUriConverter apacheHttpUriConverter;
+    private static final AuthScope AUTH_SCOPE_MATCHING_ANYTHING = new AuthScope(null, null, -1, null, null);
 
 
     public ApacheHttpTraversonClientAdapter() {
@@ -45,7 +46,7 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
 
         for (AuthCredential authCredential : request.getAuthCredentials()) {
             UsernamePasswordCredentials userPassword = new UsernamePasswordCredentials(authCredential.getUsername(), authCredential.getPassword().toCharArray());
-            AuthScope authScope = new AuthScope(null, null, -1, null, null);
+            AuthScope authScope = AUTH_SCOPE_MATCHING_ANYTHING;
             if (authCredential.getHostname() != null) {
                 HttpHost target;
                 try {
