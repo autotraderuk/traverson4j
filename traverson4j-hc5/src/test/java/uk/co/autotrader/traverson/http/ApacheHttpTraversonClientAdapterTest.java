@@ -46,7 +46,7 @@ public class ApacheHttpTraversonClientAdapterTest {
     public ExpectedException expectedException = ExpectedException.none();
     private Request request;
     private Response<JSONObject> expectedResponse;
-    private final AuthScope authScope = new AuthScope(null, null, -1, null, null);
+    private static final AuthScope AUTH_SCOPE_ANY = new AuthScope(null, null, -1, null, null);
 
     @Before
     public void setUp() throws Exception {
@@ -89,7 +89,7 @@ public class ApacheHttpTraversonClientAdapterTest {
 
         assertThat(response).isEqualTo(expectedResponse);
         HttpClientContext clientContext = clientContextCaptor.getValue();
-        Credentials credentials = clientContext.getCredentialsProvider().getCredentials(authScope, clientContext);
+        Credentials credentials = clientContext.getCredentialsProvider().getCredentials(AUTH_SCOPE_ANY, clientContext);
         assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
         assertThat(credentials.getPassword()).isEqualTo("password".toCharArray());
     }
@@ -103,7 +103,7 @@ public class ApacheHttpTraversonClientAdapterTest {
 
         assertThat(response).isEqualTo(expectedResponse);
         HttpClientContext clientContext = clientContextCaptor.getValue();
-        Credentials credentials = clientContext.getCredentialsProvider().getCredentials(authScope, clientContext);
+        Credentials credentials = clientContext.getCredentialsProvider().getCredentials(AUTH_SCOPE_ANY, clientContext);
         assertThat(credentials.getUserPrincipal().getName()).isEqualTo("user");
         assertThat(credentials.getPassword()).isEqualTo("password".toCharArray());
     }
