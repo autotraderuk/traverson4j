@@ -2,9 +2,12 @@ package uk.co.autotrader.traverson.http;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.hc.client5.http.auth.AuthCache;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
@@ -22,8 +25,10 @@ import uk.co.autotrader.traverson.exception.HttpException;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -40,6 +45,8 @@ public class ApacheHttpTraversonClientAdapterTest {
     private HttpUriRequest httpRequest;
     @Mock
     private CloseableHttpResponse httpResponse;
+    @Mock
+    private AuthCredential authCredential;
     @Captor
     private ArgumentCaptor<HttpClientContext> clientContextCaptor;
     @Rule
@@ -134,4 +141,70 @@ public class ApacheHttpTraversonClientAdapterTest {
 
         assertThat(FieldUtils.readField(apacheHttpTraversonClientAdapter, "adapterClient", true)).isNotNull();
     }
+
+    @Test
+    public void constructCredentialsProviderAndAuthCache_ifNoHostnameReturnsAnyAuthScope() {
+        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+        ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
+        AuthCache authCache = new BasicAuthCache();
+
+        when(authCredential.getUsername()).thenReturn("username");
+        when(authCredential.getPassword()).thenReturn("password");
+
+        apacheHttpTraversonClientAdapter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
+
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> <any protocol>://<any host>:<any port>=[principal: username]}");
+        assertThat(authCache.get(new HttpHost("hostname"))).isNull();
+    }
+
+    @Test
+    public void constructCredentialsProviderAndAuthCache_setsHostnameInAuthScope() {
+        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+        ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
+        AuthCache authCache = new BasicAuthCache();
+
+        when(authCredential.getUsername()).thenReturn("username");
+        when(authCredential.getPassword()).thenReturn("password");
+        when(authCredential.getHostname()).thenReturn("hostname");
+
+        apacheHttpTraversonClientAdapter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
+
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> http://hostname:<any port>=[principal: username]}");
+        assertThat(authCache.get(new HttpHost("hostname"))).isNull();
+    }
+
+    @Test
+    public void constructCredentialsProviderAndAuthCache_setsHostnameAndBasicAuth() {
+        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+        AuthCache authCache = new BasicAuthCache();
+        ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
+
+        when(authCredential.getUsername()).thenReturn("username");
+        when(authCredential.getPassword()).thenReturn("password");
+        when(authCredential.getHostname()).thenReturn("hostname");
+        when(authCredential.isPreemptiveAuthentication()).thenReturn(true);
+
+        apacheHttpTraversonClientAdapter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
+
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> http://hostname:<any port>=[principal: username]}");
+        assertThat(authCache.get(new HttpHost("hostname")).getName()).isEqualTo("Basic");
+    }
+
+    @Test
+    public void constructCredentialsProviderAndAuthCache_throwsExceptionWhenHostnameContainsSpaces() {
+        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+        ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
+        AuthCache authCache = new BasicAuthCache();
+
+        when(authCredential.getHostname()).thenReturn("hostname with spaces");
+        when(authCredential.getUsername()).thenReturn("username");
+        when(authCredential.getPassword()).thenReturn("password");
+
+        assertThatThrownBy(() -> apacheHttpTraversonClientAdapter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential))
+                .isInstanceOf(HttpException.class)
+                .hasMessage("Error with HttpHost")
+                .hasCauseInstanceOf(URISyntaxException.class);
+
+    }
+
 }

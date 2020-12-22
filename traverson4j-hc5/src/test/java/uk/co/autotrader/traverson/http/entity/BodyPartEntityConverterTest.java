@@ -29,7 +29,7 @@ public class BodyPartEntityConverterTest {
 
         HttpEntity entity = converter.toEntity(new SimpleMultipartBody(new SimpleMultipartBody.BodyPart("file", "data".getBytes(StandardCharsets.UTF_8), "contentType", "filename")));
 
-        assertThat(entity.getContentType()).matches(Pattern.compile("multipart/form-data; charset=.* boundary=.*"));
+        assertThat(entity.getContentType()).matches(Pattern.compile("multipart/form-data; charset=ISO-8859-1; boundary=.*"));
         entity.writeTo(outputStream);
         String content = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
         assertThat(content).matches(Pattern.compile(".*name=\"file\".*", Pattern.DOTALL | Pattern.MULTILINE));

@@ -45,26 +45,7 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
         AuthCache authCache = new BasicAuthCache();
 
         for (AuthCredential authCredential : request.getAuthCredentials()) {
-            UsernamePasswordCredentials userPassword = new UsernamePasswordCredentials(authCredential.getUsername(), authCredential.getPassword().toCharArray());
-            AuthScope authScope = AUTH_SCOPE_MATCHING_ANYTHING;
-            if (authCredential.getHostname() != null) {
-                HttpHost target;
-                try {
-                    target = HttpHost.create(authCredential.getHostname());
-                    authScope = new AuthScope(target);
-
-                } catch (URISyntaxException e) {
-                    throw new HttpException("Error with HttpHost", e);
-                }
-
-                if (authCredential.isPreemptiveAuthentication()) {
-                    BasicScheme authScheme = new BasicScheme();
-                    authScheme.initPreemptive(userPassword);
-                    authCache.put(target, authScheme);
-                }
-            }
-
-            credentialsProvider.setCredentials(authScope, userPassword);
+            constructCredentialsProviderAndAuthCache(credentialsProvider, authCache, authCredential);
         }
 
         clientContext.setCredentialsProvider(credentialsProvider);
@@ -78,5 +59,27 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
         } finally {
             IOUtils.close(httpResponse);
         }
+    }
+
+    void constructCredentialsProviderAndAuthCache(BasicCredentialsProvider credentialsProvider, AuthCache authCache, AuthCredential authCredential) {
+        UsernamePasswordCredentials userPassword = new UsernamePasswordCredentials(authCredential.getUsername(), authCredential.getPassword().toCharArray());
+        AuthScope authScope = AUTH_SCOPE_MATCHING_ANYTHING;
+        if (authCredential.getHostname() != null) {
+            HttpHost target;
+            try {
+                target = HttpHost.create(authCredential.getHostname());
+                authScope = new AuthScope(target);
+            } catch (URISyntaxException e) {
+                throw new HttpException("Error with HttpHost", e);
+            }
+
+            if (authCredential.isPreemptiveAuthentication()) {
+                BasicScheme authScheme = new BasicScheme();
+                authScheme.initPreemptive(userPassword);
+                authCache.put(target, authScheme);
+            }
+        }
+
+        credentialsProvider.setCredentials(authScope, userPassword);
     }
 }

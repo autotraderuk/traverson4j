@@ -42,7 +42,7 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenUnsupportedResponseType_ThrowsException() throws Exception {
+    public void convert_GivenUnsupportedResponseType_ThrowsException() {
         expectedException.expect(ConversionException.class);
         expectedException.expectCause(CoreMatchers.nullValue(Throwable.class));
         expectedException.expectMessage("Unsupported return type of uk.co.autotrader.traverson.conversion.UnsupportedType");
