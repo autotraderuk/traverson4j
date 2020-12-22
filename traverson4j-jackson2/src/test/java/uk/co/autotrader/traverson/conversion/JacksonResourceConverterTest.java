@@ -4,12 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -23,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,18 +29,6 @@ public class JacksonResourceConverterTest {
     private JacksonResourceConverter converter;
     @Mock
     private ObjectMapper objectMapper;
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
-    private final BaseMatcher<Object> matcher = new BaseMatcher<Object>() {
-        @Override
-        public void describeTo(Description description) { }
-        @Override
-        public boolean matches(Object item) {
-            ConversionException ex = (ConversionException) item;
-            return ex.getResourceAsString().equals("{}");
-        }
-    };
 
     @Before
     public void setUp() {
@@ -79,14 +63,17 @@ public class JacksonResourceConverterTest {
         final String resourceAsString = "{}";
         IOException ioException = new IOException("Error happened");
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(ioException);
-        expectedException.expect(ConversionException.class);
-        expectedException.expectCause(equalTo(ioException));
-        expectedException.expect(matcher);
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
 
-        converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class);
+        assertThatThrownBy(() -> converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class))
+                .isInstanceOf(ConversionException.class)
+                .hasCauseInstanceOf(IOException.class)
+                .matches(object -> {
+                    ConversionException ex = (ConversionException) object;
+                    return ex.getResourceAsString().equals(resourceAsString);
+                });
     }
 
     @Test
@@ -94,13 +81,16 @@ public class JacksonResourceConverterTest {
         final String resourceAsString = "{}";
         RuntimeException runtimeException = new RuntimeException("Error happened");
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(runtimeException);
-        expectedException.expect(ConversionException.class);
-        expectedException.expectCause(equalTo(runtimeException));
-        expectedException.expect(matcher);
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
 
-        converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class);
+        assertThatThrownBy(() -> converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class))
+                .isInstanceOf(ConversionException.class)
+                .hasCauseInstanceOf(RuntimeException.class)
+                .matches(object -> {
+                    ConversionException ex = (ConversionException) object;
+                    return ex.getResourceAsString().equals(resourceAsString);
+                });
     }
 }

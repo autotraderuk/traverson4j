@@ -34,7 +34,7 @@ public class ResourceConversionServiceTest {
     private InputStream inputStream;
 
     @Test
-    public void init_EnsuresThatTheDefaultConvertersAreRegistered() throws Exception {
+    public void init_EnsuresThatTheDefaultConvertersAreRegistered() {
         Map<Class<?>, ResourceConverter<?>> converters = service.getConvertersByClass();
 
         assertThat(converters).isNotEmpty();
@@ -60,7 +60,7 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenRequestForFastJSON_EnsuresTheFastJsonConverterIsLoaded() throws Exception {
+    public void convert_GivenRequestForFastJSON_EnsuresTheFastJsonConverterIsLoaded() {
         String resourceAsString = "{'name':'test'}";
 
         JSONObject resource = service.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
@@ -69,7 +69,7 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenRequestForString_EnsuresTheStringConverterIsLoaded() throws Exception {
+    public void convert_GivenRequestForString_EnsuresTheStringConverterIsLoaded() {
         String resourceAsString = "{'name':'test'}";
         String resource = service.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), String.class);
 
@@ -77,7 +77,7 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenRequestForByteArray_EnsuresTheStringConverterIsLoaded() throws Exception {
+    public void convert_GivenRequestForByteArray_EnsuresTheStringConverterIsLoaded() {
         byte[] bytes = new byte[] {0, 1, 2, 3};
         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 
@@ -87,7 +87,7 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenTheConvertersAreLoadedInAnyOrder_TheConversionServiceWillTraverseTheClassHierarchyUntilAMatch() throws Exception {
+    public void convert_GivenTheConvertersAreLoadedInAnyOrder_TheConversionServiceWillTraverseTheClassHierarchyUntilAMatch() {
         String resourceAsString = "1234";
         InputStream resourceStream = IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8);
         when(failingConverter.getDestinationType()).thenReturn(Object.class);

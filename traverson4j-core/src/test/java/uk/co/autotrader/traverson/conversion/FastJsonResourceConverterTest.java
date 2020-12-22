@@ -4,24 +4,18 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.data.MapEntry;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class FastJsonResourceConverterTest {
 
     private FastJsonResourceConverter converter;
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -45,21 +39,14 @@ public class FastJsonResourceConverterTest {
     @Test
     public void convert_GivenXMLString_ThrowsConversionException() {
         final String resourceAsString = "<xml><_links><self><href>http://localhost</href></self></_links></xml>";
-        final BaseMatcher<Object> matcher = new BaseMatcher<Object>() {
-            @Override
-            public void describeTo(Description description) { }
-            @Override
-            public boolean matches(Object item) {
-                ConversionException ex = (ConversionException) item;
-                return ex.getResourceAsString().equals(resourceAsString);
-            }
-        };
 
-        expectedException.expect(ConversionException.class);
-        expectedException.expectCause(IsInstanceOf.<Throwable>instanceOf(JSONException.class));
-        expectedException.expect(matcher);
-
-        converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
+        assertThatThrownBy(() -> converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class))
+                .isInstanceOf(ConversionException.class)
+                .hasCauseInstanceOf(JSONException.class)
+                .matches(object -> {
+                    ConversionException ex = (ConversionException) object;
+                    return ex.getResourceAsString().equals(resourceAsString);
+                });
     }
 
     @Test
