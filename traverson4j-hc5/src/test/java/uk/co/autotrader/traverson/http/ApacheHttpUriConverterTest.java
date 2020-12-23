@@ -17,8 +17,10 @@ import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -167,5 +169,16 @@ public class ApacheHttpUriConverterTest {
         Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, request, String.class);
 
         assertThat(response.getResource()).isEqualTo(expectedJson);
+    }
+
+    @Test
+    public void toResponse_throwsIllegalArgumentExceptionForAnInvalidURI() throws URISyntaxException {
+        HttpRequest request =  mock(HttpRequest.class);
+        when(request.getUri()).thenThrow(URISyntaxException.class);
+
+        assertThatThrownBy(() -> apacheHttpUriConverter.toResponse(httpResponse, request, String.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The http request contains an invalid URI")
+                .hasCauseInstanceOf(URISyntaxException.class);
     }
 }
