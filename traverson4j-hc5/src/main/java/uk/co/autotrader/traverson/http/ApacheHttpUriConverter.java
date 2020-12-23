@@ -5,12 +5,13 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.IOException;
-import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +47,13 @@ public class ApacheHttpUriConverter {
     }
 
 
-    public <T> Response<T> toResponse(CloseableHttpResponse httpResponse, URI requestUri, Class<T> returnType) throws IOException {
+    public <T> Response<T> toResponse(CloseableHttpResponse httpResponse, HttpRequest httpRequest, Class<T> returnType) throws IOException {
         Response<T> response = new Response<T>();
-        response.setUri(requestUri);
+        try {
+            response.setUri(httpRequest.getUri());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("The http request contains an invalid URI", e);
+        }
         response.setStatusCode(httpResponse.getCode());
         for (Header responseHeader : httpResponse.getHeaders()) {
             response.addResponseHeader(responseHeader.getName(), responseHeader.getValue());

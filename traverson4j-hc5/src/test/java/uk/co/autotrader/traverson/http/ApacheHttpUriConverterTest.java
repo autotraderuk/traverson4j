@@ -4,6 +4,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.junit.Before;
 import org.junit.Test;
@@ -132,11 +133,15 @@ public class ApacheHttpUriConverterTest {
 
     @Test
     public void toResponse_BuildsResponseCorrectly() throws Exception {
+        HttpRequest request =  mock(HttpRequest.class);
         URI requestUri = new URI("http://localhost");
+
+        when(request.getUri()).thenReturn(requestUri);
         when(httpResponse.getCode()).thenReturn(200);
         when(httpResponse.getHeaders()).thenReturn(new Header[]{new BasicHeader("Location", "http://localhost/new")});
 
-        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, requestUri, String.class);
+
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, request, String.class);
 
         assertThat(response).isNotNull();
         assertThat(response.getUri()).isEqualTo(requestUri);
@@ -147,16 +152,19 @@ public class ApacheHttpUriConverterTest {
 
     @Test
     public void toResponse_GivenResponseHasEntity_ConvertsAndSetsResource() throws Exception {
+        HttpRequest request =  mock(HttpRequest.class);
         URI requestUri = new URI("http://localhost");
         String expectedJson = "{'name':'test'}";
         InputStream inputStream = Mockito.mock(InputStream.class);
+
+        when(request.getUri()).thenReturn(requestUri);
         when(httpResponse.getEntity()).thenReturn(httpEntity);
         when(httpEntity.getContent()).thenReturn(inputStream);
         when(conversionService.convert(inputStream, String.class)).thenReturn(expectedJson);
         when(httpResponse.getCode()).thenReturn(202);
         when(httpResponse.getHeaders()).thenReturn(new Header[0]);
 
-        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, requestUri, String.class);
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, request, String.class);
 
         assertThat(response.getResource()).isEqualTo(expectedJson);
     }

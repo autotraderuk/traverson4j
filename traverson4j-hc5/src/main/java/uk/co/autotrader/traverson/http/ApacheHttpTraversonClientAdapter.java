@@ -53,8 +53,8 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
         CloseableHttpResponse httpResponse = null;
         try {
             httpResponse = adapterClient.execute(httpRequest, clientContext);
-            return apacheHttpUriConverter.toResponse(httpResponse, httpRequest.getUri(), returnType);
-        } catch (IOException | URISyntaxException e) {
+            return apacheHttpUriConverter.toResponse(httpResponse, httpRequest, returnType);
+        } catch (IOException e) {
             throw new HttpException("Error with httpClient", e);
         } finally {
             IOUtils.close(httpResponse);
@@ -70,7 +70,7 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
                 target = HttpHost.create(authCredential.getHostname());
                 authScope = new AuthScope(target);
             } catch (URISyntaxException e) {
-                throw new HttpException("Error with HttpHost", e);
+                throw new IllegalArgumentException("Preemptive authentication hostname is invalid", e);
             }
 
             if (authCredential.isPreemptiveAuthentication()) {
@@ -79,7 +79,6 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
                 authCache.put(target, authScheme);
             }
         }
-
         credentialsProvider.setCredentials(authScope, userPassword);
     }
 }

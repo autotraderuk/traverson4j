@@ -24,7 +24,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.HttpException;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,14 +56,12 @@ public class ApacheHttpTraversonClientAdapterTest {
 
     @Before
     public void setUp() throws Exception {
-        URI uri = new URI("http://localhost");
         clientAdapter = new ApacheHttpTraversonClientAdapter(httpClient);
         FieldUtils.writeField(clientAdapter, "apacheHttpUriConverter", apacheHttpUriConverter, true);
         request = new Request();
         expectedResponse = new Response<>();
-        when(httpRequest.getUri()).thenReturn(uri);
         when(apacheHttpUriConverter.toRequest(request)).thenReturn(httpRequest);
-        when(apacheHttpUriConverter.toResponse(httpResponse, uri, JSONObject.class)).thenReturn(expectedResponse);
+        when(apacheHttpUriConverter.toResponse(httpResponse, httpRequest, JSONObject.class)).thenReturn(expectedResponse);
     }
 
     @Test
@@ -79,7 +76,7 @@ public class ApacheHttpTraversonClientAdapterTest {
     @Test
     public void execute_GivenIOExceptionIsThrown_WrapsInTraversonException() throws Exception {
         when(httpClient.execute(eq(httpRequest), any(HttpClientContext.class))).thenReturn(httpResponse);
-        when(apacheHttpUriConverter.toResponse(httpResponse, httpRequest.getUri(), JSONObject.class)).thenThrow(new IOException());
+        when(apacheHttpUriConverter.toResponse(httpResponse, httpRequest, JSONObject.class)).thenThrow(new IOException());
         expectedException.expect(HttpException.class);
 
         clientAdapter.execute(request, JSONObject.class);
@@ -201,10 +198,9 @@ public class ApacheHttpTraversonClientAdapterTest {
         when(authCredential.getPassword()).thenReturn("password");
 
         assertThatThrownBy(() -> apacheHttpTraversonClientAdapter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential))
-                .isInstanceOf(HttpException.class)
-                .hasMessage("Error with HttpHost")
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Preemptive authentication hostname is invalid")
                 .hasCauseInstanceOf(URISyntaxException.class);
-
     }
 
 }
