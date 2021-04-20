@@ -1,7 +1,6 @@
 package uk.co.autotrader.traverson.conversion;
 
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ResourceConversionServiceTest {
 
-    private ResourceConversionService service = ResourceConversionService.getInstance();
+    private final ResourceConversionService service = ResourceConversionService.getInstance();
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
     @Mock
@@ -63,15 +62,16 @@ public class ResourceConversionServiceTest {
     public void convert_GivenRequestForFastJSON_EnsuresTheFastJsonConverterIsLoaded() {
         String resourceAsString = "{'name':'test'}";
 
-        JSONObject resource = service.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), JSONObject.class);
+        JSONObject resource = service.convert(toInputStream(resourceAsString), JSONObject.class);
 
         assertThat(resource).isNotNull().containsEntry("name", "test");
     }
 
+
     @Test
     public void convert_GivenRequestForString_EnsuresTheStringConverterIsLoaded() {
         String resourceAsString = "{'name':'test'}";
-        String resource = service.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), String.class);
+        String resource = service.convert(toInputStream(resourceAsString), String.class);
 
         assertThat(resource).isNotNull().isEqualTo(resourceAsString);
     }
@@ -89,7 +89,7 @@ public class ResourceConversionServiceTest {
     @Test
     public void convert_GivenTheConvertersAreLoadedInAnyOrder_TheConversionServiceWillTraverseTheClassHierarchyUntilAMatch() {
         String resourceAsString = "1234";
-        InputStream resourceStream = IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8);
+        InputStream resourceStream = toInputStream(resourceAsString);
         when(failingConverter.getDestinationType()).thenReturn(Object.class);
         when(converter.getDestinationType()).thenReturn(Number.class);
         when(converter.convert(resourceStream, Integer.class)).thenReturn(1234);
@@ -101,5 +101,9 @@ public class ResourceConversionServiceTest {
         Integer value = service.convert(resourceStream, Integer.class);
 
         assertThat(value).isEqualTo(1234);
+    }
+
+    private InputStream toInputStream(String resourceAsString) {
+        return new ByteArrayInputStream(resourceAsString.getBytes(StandardCharsets.UTF_8));
     }
 }
