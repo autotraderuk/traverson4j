@@ -1,5 +1,5 @@
 plugins {
-    id "com.jfrog.bintray" version "1.8.0" apply false
+    id "com.github.spotbugs" version "4.7.0" apply false
 }
 
 allprojects {
@@ -11,10 +11,8 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'jacoco'
     apply plugin: 'checkstyle'
-    apply plugin: 'maven'
-    apply plugin: 'findbugs'
     apply plugin: 'maven-publish'
-    apply plugin: 'com.jfrog.bintray'
+    apply plugin: 'com.github.spotbugs'
 
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -24,12 +22,11 @@ subprojects {
     }
 
     dependencies {
-        testCompile 'junit:junit:4.12',
+        testImplementation 'junit:junit:4.12',
                 'com.google.guava:guava:18.0',
                 'org.mockito:mockito-core:3.6.28',
                 'org.assertj:assertj-core:3.11.1',
-                'org.apache.commons:commons-lang3:3.4',
-                'com.google.code.findbugs:findbugs-annotations:3.0.1'
+                'org.apache.commons:commons-lang3:3.4'
     }
 
     jacocoTestCoverageVerification {
@@ -52,15 +49,8 @@ subprojects {
         }
     }
 
-    findbugs {
-        toolVersion = '3.0.1'
-    }
-
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled = false
-            html.enabled = true
-        }
+    spotbugs {
+        toolVersion = '4.2.3'
     }
 
     build {
@@ -79,12 +69,12 @@ subprojects {
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from sourceSets.main.allSource
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc.destinationDir
     }
 
@@ -102,37 +92,16 @@ subprojects {
             }
         }
     }
-
-    bintray {
-        user = System.getenv('BINTRAY_USER')
-        key = System.getenv('BINTRAY_KEY')
-        dryRun = true
-        publish = true
-        publications = ['MavenPublication']
-        pkg {
-            repo = 'maven'
-            name = project.name
-            licenses = ['Apache-2.0']
-            vcsUrl = 'https://github.com/autotraderuk/traverson4j.git'
-            version {
-                name = project.version
-            }
-        }
-    }
 }
 
 project(':traverson4j-hc5') {
     dependencies {
-        compile project(':traverson4j-core')
+        implementation project(':traverson4j-core')
     }
 }
 
 project(':traverson4j-jackson2') {
     dependencies {
-        compile project(':traverson4j-core')
+        implementation project(':traverson4j-core')
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.6'
 }
