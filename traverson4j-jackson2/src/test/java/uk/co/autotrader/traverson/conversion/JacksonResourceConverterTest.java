@@ -1,5 +1,6 @@
 package uk.co.autotrader.traverson.conversion;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.apache.commons.io.IOUtils;
@@ -12,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -59,17 +59,17 @@ public class JacksonResourceConverterTest {
     }
 
     @Test
-    public void convert_GivenTheObjectMapperThrowsIoException_WrapsInConversionException() throws Exception {
+    public void convert_GivenTheObjectMapperThrowsJacksonException_WrapsInConversionException() throws Exception {
         final String resourceAsString = "{}";
-        IOException ioException = new IOException("Error happened");
-        when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(ioException);
+        JsonProcessingException jsonProcessingException = Mockito.mock(JsonProcessingException.class);
+        when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(jsonProcessingException);
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
 
         assertThatThrownBy(() -> converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class))
                 .isInstanceOf(ConversionException.class)
-                .hasCauseInstanceOf(IOException.class)
+                .hasCauseInstanceOf(JsonProcessingException.class)
                 .matches(object -> {
                     ConversionException ex = (ConversionException) object;
                     return ex.getResourceAsString().equals(resourceAsString);
