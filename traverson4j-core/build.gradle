@@ -1,4 +1,4 @@
 dependencies {
-    compile 'com.alibaba:fastjson:1.2.54'
-    compile 'commons-io:commons-io:2.6'
+    api 'com.alibaba:fastjson:1.2.54'
+    api 'commons-io:commons-io:2.6'
 }
