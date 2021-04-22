@@ -1,5 +1,6 @@
 plugins {
     id "com.github.spotbugs" version "4.7.0" apply false
+    id "org.owasp.dependencycheck" version "6.1.5" apply false
 }
 
 allprojects {
@@ -13,9 +14,10 @@ subprojects {
     apply plugin: 'checkstyle'
     apply plugin: 'maven-publish'
     apply plugin: 'com.github.spotbugs'
+    apply plugin: 'org.owasp.dependencycheck'
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     repositories {
         mavenCentral()
@@ -59,7 +61,7 @@ subprojects {
 
     checkstyle {
         configFile = rootProject.file('config/checkstyle/checkstyle.xml')
-        toolVersion = "7.2"
+        toolVersion = "8.41.1"
     }
 
     jar {

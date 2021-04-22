@@ -1,9 +1,9 @@
 package uk.co.autotrader.traverson.conversion;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public class JacksonResourceConverter implements ResourceConverter<Object> {
@@ -25,7 +25,7 @@ public class JacksonResourceConverter implements ResourceConverter<Object> {
         try {
             resourceAsString = new StringResourceConverter().convert(resource, String.class);
             return objectMapper.readValue(resourceAsString, returnType);
-        } catch (IOException | RuntimeException e) {
+        } catch (JsonProcessingException | RuntimeException e) {
             throw new ConversionException("Failed to map object using jackson", resourceAsString, e);
         }
     }

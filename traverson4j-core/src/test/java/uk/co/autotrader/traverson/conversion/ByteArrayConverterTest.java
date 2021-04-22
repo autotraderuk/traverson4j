@@ -11,7 +11,6 @@ import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +39,7 @@ public class ByteArrayConverterTest {
     @Test
     public void convert_WrapsIOExceptionInConversionException() throws Exception {
         InputStream inputStream = Mockito.mock(InputStream.class);
-        when(inputStream.read(any())).thenThrow(new IOException());
+        when(inputStream.readAllBytes()).thenThrow(new IOException());
 
         assertThatThrownBy(() -> converter.convert(inputStream, byte[].class))
                 .isInstanceOf(ConversionException.class)

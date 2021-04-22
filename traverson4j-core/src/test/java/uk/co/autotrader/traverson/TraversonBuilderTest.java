@@ -450,6 +450,6 @@ public class TraversonBuilderTest {
         assertThat(response).isEqualTo(firstResponse);
         assertThat(request.getUrl()).isEqualTo("http://localhost/");
         assertThat(request.getMethod()).isEqualTo(Method.GET);
-        verifyZeroInteractions(linkDiscoverer);
+        verifyNoInteractions(linkDiscoverer);
     }
 }

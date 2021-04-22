@@ -1,11 +1,11 @@
 package uk.co.autotrader.traverson.conversion;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +32,7 @@ public class StringResourceConverterTest {
     @Test
     public void convert_ReturnsTheInputString() throws Exception {
         String resourceAsString = "My Resource";
-        InputStream inputStream = Mockito.spy(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8));
+        InputStream inputStream = Mockito.spy(new ByteArrayInputStream(resourceAsString.getBytes(StandardCharsets.UTF_8)));
 
         assertThat(converter.convert(inputStream, String.class)).isEqualTo(resourceAsString);
         verify(inputStream).close();
@@ -41,7 +41,7 @@ public class StringResourceConverterTest {
     @Test
     public void convert_WrapsIOExceptionInConversionException() throws Exception {
         InputStream inputStream = Mockito.mock(InputStream.class);
-        when(inputStream.read()).thenThrow(new IOException());
+        when(inputStream.readAllBytes()).thenThrow(new IOException());
 
         assertThatThrownBy(() -> converter.convert(inputStream, String.class))
                 .isInstanceOf(ConversionException.class)

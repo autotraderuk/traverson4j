@@ -1,8 +1,8 @@
 package uk.co.autotrader.traverson.conversion;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +43,7 @@ public class JacksonResourceConverterTest {
     @Test
     public void convert_GivenJsonStringAndValidStructuredPojo_ReturnsMappedPojo() throws Exception {
         String resourceAsString = Resources.toString(Resources.getResource("hal-embedded.json"), Charset.defaultCharset());
-        InputStream resource = Mockito.spy(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8));
+        InputStream resource = Mockito.spy(new ByteArrayInputStream(resourceAsString.getBytes(StandardCharsets.UTF_8)));
 
         Domains domains = (Domains) converter.convert(resource, Domains.class);
 
@@ -59,17 +59,17 @@ public class JacksonResourceConverterTest {
     }
 
     @Test
-    public void convert_GivenTheObjectMapperThrowsIoException_WrapsInConversionException() throws Exception {
+    public void convert_GivenTheObjectMapperThrowsJacksonException_WrapsInConversionException() throws Exception {
         final String resourceAsString = "{}";
-        IOException ioException = new IOException("Error happened");
-        when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(ioException);
+        JsonProcessingException jsonProcessingException = Mockito.mock(JsonProcessingException.class);
+        when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(jsonProcessingException);
 
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
 
-        assertThatThrownBy(() -> converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class))
+        assertThatThrownBy(() -> converter.convert(new ByteArrayInputStream(resourceAsString.getBytes(StandardCharsets.UTF_8)), Domains.class))
                 .isInstanceOf(ConversionException.class)
-                .hasCauseInstanceOf(IOException.class)
+                .hasCauseInstanceOf(JsonProcessingException.class)
                 .matches(object -> {
                     ConversionException ex = (ConversionException) object;
                     return ex.getResourceAsString().equals(resourceAsString);
@@ -85,7 +85,7 @@ public class JacksonResourceConverterTest {
         JacksonResourceConverter converter = new JacksonResourceConverter();
         FieldUtils.writeField(converter, "objectMapper", objectMapper, true);
 
-        assertThatThrownBy(() -> converter.convert(IOUtils.toInputStream(resourceAsString, StandardCharsets.UTF_8), Domains.class))
+        assertThatThrownBy(() -> converter.convert(new ByteArrayInputStream(resourceAsString.getBytes(StandardCharsets.UTF_8)), Domains.class))
                 .isInstanceOf(ConversionException.class)
                 .hasCauseInstanceOf(RuntimeException.class)
                 .matches(object -> {
