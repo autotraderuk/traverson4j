@@ -1,6 +1,7 @@
 plugins {
     id "com.github.spotbugs" version "4.7.0" apply false
     id "org.owasp.dependencycheck" version "6.1.5" apply false
+    id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
 allprojects {
@@ -132,6 +133,12 @@ subprojects {
                 }
             }
         }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype()
     }
 }
 
