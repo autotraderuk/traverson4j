@@ -8,11 +8,17 @@ allprojects {
     version = "1.0.0"
 }
 
+
+project(':traverson4j-core').description("The kernel of traverson4j. This provides the main API for a client to traverse a Hypermedia REST service")
+project(':traverson4j-hc5').description("An Apache HttpComponents 5 client to power traverson4j-core")
+project(':traverson4j-jackson2').description("A ResourceConverter backed by Jackson 2 binding")
+
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'jacoco'
     apply plugin: 'checkstyle'
     apply plugin: 'maven-publish'
+    apply plugin: 'signing'
     apply plugin: 'com.github.spotbugs'
     apply plugin: 'org.owasp.dependencycheck'
 
@@ -85,12 +91,45 @@ subprojects {
         archives javadocJar
     }
 
+    signing {
+        def signingKeyId = findProperty("signingKeyId")
+        def signingKey = findProperty("signingKey")
+        def signingPassword = findProperty("signingPassword")
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign configurations.archives
+    }
+
     publishing {
         publications {
             MavenPublication(MavenPublication) {
                 from components.java
                 artifact sourcesJar
                 artifact javadocJar
+                pom {
+                    name = "${project.name}"
+                    description = project.description
+                    url = 'https://github.com/autotraderuk/traverson4j'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'MikeRocke'
+                            name = 'Michael Rocke'
+                            email = 'Michael.Rocke@autotrader.co.uk'
+                            organization = "Auto Trader"
+                            organizationUrl = "https://www.autotrader.co.uk/"
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/autotraderuk/traverson4j.git'
+                        developerConnection = 'scm:git:ssh://github.com/autotraderuk/traverson4j.git'
+                        url = 'https://github.com/autotraderuk/traverson4j'
+                    }
+                }
             }
         }
     }
