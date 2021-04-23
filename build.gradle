@@ -144,12 +144,12 @@ nexusPublishing {
 
 project(':traverson4j-hc5') {
     dependencies {
-        implementation project(':traverson4j-core')
+        api project(':traverson4j-core')
     }
 }
 
 project(':traverson4j-jackson2') {
     dependencies {
-        implementation project(':traverson4j-core')
+        api project(':traverson4j-core')
     }
 }
