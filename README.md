@@ -19,7 +19,7 @@ traverson4j comes with a http adapter using Apache Http Components 5. So lets us
 
 Gradle:
 ```gradle
-'uk.co.autotrader:traverson4j-hc5:1.0.0-rc.2'
+'uk.co.autotrader:traverson4j-hc5:3.0.1'
 ```
 
 Maven:
@@ -27,7 +27,7 @@ Maven:
 <dependency>
   <groupId>uk.co.autotrader</groupId>
   <artifactId>traverson4j-hc5</artifactId>
-  <version>1.0.0-rc.2</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
@@ -36,7 +36,7 @@ To use the new support for Jackson databind 2, you can include the traverson4j-j
 
 Gradle:
 ```gradle
-'uk.co.autotrader:traverson4j-jackson2:1.0.0-rc.2'
+'uk.co.autotrader:traverson4j-jackson2:3.0.1'
 ```
 
 Maven:
@@ -44,7 +44,7 @@ Maven:
 <dependency>
   <groupId>uk.co.autotrader</groupId>
   <artifactId>traverson4j-jackson2</artifactId>
-  <version>1.0.0-rc.2</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
