@@ -6,12 +6,12 @@ A Java port of the javascript library found https://github.com/basti1302/travers
 
 ## Getting started
 
-We are now hosted on jcenter! 
+We are now hosted on Maven Central! 
 
 Gradle:
 ```gradle
 repositories {
-    jcenter()
+    mavenCentral()
 }
 ```
 
