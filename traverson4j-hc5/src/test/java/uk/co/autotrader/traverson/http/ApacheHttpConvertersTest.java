@@ -1,10 +1,10 @@
 package uk.co.autotrader.traverson.http;
 
+import org.apache.hc.client5.http.auth.AuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ApacheHttpUriConverterTest {
-    private ApacheHttpUriConverter apacheHttpUriConverter;
+public class ApacheHttpConvertersTest {
+    private ApacheHttpConverters apacheHttpUriConverter;
     @Mock
     private BodyFactory bodyFactory;
     @Mock
@@ -36,10 +36,12 @@ public class ApacheHttpUriConverterTest {
     private HttpEntity httpEntity;
     @Mock
     private CloseableHttpResponse httpResponse;
+    @Mock
+    private AuthCredential authCredential;
 
     @Before
     public void setUp() {
-        apacheHttpUriConverter = new ApacheHttpUriConverter(bodyFactory, uriUtils, conversionService);
+        apacheHttpUriConverter = new ApacheHttpConverters(bodyFactory, uriUtils, conversionService);
     }
 
     @Test
@@ -143,7 +145,7 @@ public class ApacheHttpUriConverterTest {
         when(httpResponse.getHeaders()).thenReturn(new Header[]{new BasicHeader("Location", "http://localhost/new")});
 
 
-        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, request, String.class);
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, String.class, request.getUri());
 
         assertThat(response).isNotNull();
         assertThat(response.getUri()).isEqualTo(requestUri);
@@ -166,19 +168,72 @@ public class ApacheHttpUriConverterTest {
         when(httpResponse.getCode()).thenReturn(202);
         when(httpResponse.getHeaders()).thenReturn(new Header[0]);
 
-        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, request, String.class);
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, String.class, request.getUri());
 
         assertThat(response.getResource()).isEqualTo(expectedJson);
     }
 
     @Test
-    public void toResponse_throwsIllegalArgumentExceptionForAnInvalidURI() throws URISyntaxException {
-        HttpRequest request =  mock(HttpRequest.class);
-        when(request.getUri()).thenThrow(URISyntaxException.class);
+    public void constructCredentialsProviderAndAuthCache_ifNoHostnameReturnsAnyAuthScope() {
+        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+        ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
+        AuthCache authCache = new BasicAuthCache();
 
-        assertThatThrownBy(() -> apacheHttpUriConverter.toResponse(httpResponse, request, String.class))
+        when(authCredential.getUsername()).thenReturn("username");
+        when(authCredential.getPassword()).thenReturn("password");
+
+        apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
+
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> <any protocol>://<any host>:<any port>=[principal: username]}");
+        assertThat(authCache.get(new HttpHost("hostname"))).isNull();
+    }
+
+    @Test
+    public void constructCredentialsProviderAndAuthCache_setsHostnameInAuthScope() {
+        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+        ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
+        AuthCache authCache = new BasicAuthCache();
+
+        when(authCredential.getUsername()).thenReturn("username");
+        when(authCredential.getPassword()).thenReturn("password");
+        when(authCredential.getHostname()).thenReturn("hostname");
+
+        apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
+
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> http://hostname:<any port>=[principal: username]}");
+        assertThat(authCache.get(new HttpHost("hostname"))).isNull();
+    }
+
+    @Test
+    public void constructCredentialsProviderAndAuthCache_setsHostnameAndBasicAuth() {
+        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+        AuthCache authCache = new BasicAuthCache();
+        ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
+
+        when(authCredential.getUsername()).thenReturn("username");
+        when(authCredential.getPassword()).thenReturn("password");
+        when(authCredential.getHostname()).thenReturn("hostname");
+        when(authCredential.isPreemptiveAuthentication()).thenReturn(true);
+
+        apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
+
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> http://hostname:<any port>=[principal: username]}");
+        assertThat(authCache.get(new HttpHost("hostname")).getName()).isEqualTo("Basic");
+    }
+
+    @Test
+    public void constructCredentialsProviderAndAuthCache_throwsExceptionWhenHostnameContainsSpaces() {
+        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+        ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
+        AuthCache authCache = new BasicAuthCache();
+
+        when(authCredential.getHostname()).thenReturn("hostname with spaces");
+        when(authCredential.getUsername()).thenReturn("username");
+        when(authCredential.getPassword()).thenReturn("password");
+
+        assertThatThrownBy(() -> apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("The http request contains an invalid URI")
+                .hasMessage("Preemptive authentication hostname is invalid")
                 .hasCauseInstanceOf(URISyntaxException.class);
     }
 }

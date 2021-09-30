@@ -1,30 +1,23 @@
 package uk.co.autotrader.traverson.http;
 
 import com.alibaba.fastjson.util.IOUtils;
-import org.apache.hc.client5.http.auth.AuthCache;
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
-import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
-import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.HttpHost;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
 import uk.co.autotrader.traverson.exception.HttpException;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 
 public class ApacheHttpTraversonClientAdapter implements TraversonClient {
 
     private final CloseableHttpClient adapterClient;
-    private final ApacheHttpUriConverter apacheHttpUriConverter;
-    private static final AuthScope AUTH_SCOPE_MATCHING_ANYTHING = new AuthScope(null, null, -1, null, null);
+    final ApacheHttpConverters apacheHttpUriConverter;
 
 
     public ApacheHttpTraversonClientAdapter() {
@@ -33,52 +26,28 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
 
     public ApacheHttpTraversonClientAdapter(CloseableHttpClient client) {
         this.adapterClient = client;
-        this.apacheHttpUriConverter = new ApacheHttpUriConverter(new BodyFactory(), new TemplateUriUtils(), ResourceConversionService.getInstance());
+        this.apacheHttpUriConverter = new ApacheHttpConverters(new BodyFactory(), new TemplateUriUtils(), ResourceConversionService.getInstance());
     }
 
     @Override
     public <T> Response<T> execute(Request request, Class<T> returnType) {
         ClassicHttpRequest httpRequest = apacheHttpUriConverter.toRequest(request);
-
-        HttpClientContext clientContext = HttpClientContext.create();
-        BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        AuthCache authCache = new BasicAuthCache();
-
-        for (AuthCredential authCredential : request.getAuthCredentials()) {
-            constructCredentialsProviderAndAuthCache(credentialsProvider, authCache, authCredential);
-        }
-
-        clientContext.setCredentialsProvider(credentialsProvider);
-        clientContext.setAuthCache(authCache);
+        HttpClientContext clientContext = apacheHttpUriConverter.toHttpClientContext(request);
         CloseableHttpResponse httpResponse = null;
+        boolean shouldCloseStream = !returnType.isAssignableFrom(InputStream.class);
         try {
             httpResponse = adapterClient.execute(httpRequest, clientContext);
-            return apacheHttpUriConverter.toResponse(httpResponse, httpRequest, returnType);
-        } catch (IOException e) {
+            return apacheHttpUriConverter.toResponse(httpResponse, returnType, httpRequest.getUri());
+        } catch (RuntimeException runtimeException) {
+            shouldCloseStream = true;
+            throw runtimeException;
+        } catch (IOException | URISyntaxException e) {
+            shouldCloseStream = true;
             throw new HttpException("Error with httpClient", e);
         } finally {
-            IOUtils.close(httpResponse);
-        }
-    }
-
-    void constructCredentialsProviderAndAuthCache(BasicCredentialsProvider credentialsProvider, AuthCache authCache, AuthCredential authCredential) {
-        UsernamePasswordCredentials userPassword = new UsernamePasswordCredentials(authCredential.getUsername(), authCredential.getPassword().toCharArray());
-        AuthScope authScope = AUTH_SCOPE_MATCHING_ANYTHING;
-        if (authCredential.getHostname() != null) {
-            HttpHost target;
-            try {
-                target = HttpHost.create(authCredential.getHostname());
-                authScope = new AuthScope(target);
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("Preemptive authentication hostname is invalid", e);
-            }
-
-            if (authCredential.isPreemptiveAuthentication()) {
-                BasicScheme authScheme = new BasicScheme();
-                authScheme.initPreemptive(userPassword);
-                authCache.put(target, authScheme);
+            if (shouldCloseStream) {
+                IOUtils.close(httpResponse);
             }
         }
-        credentialsProvider.setCredentials(authScope, userPassword);
     }
 }
