@@ -37,7 +37,7 @@ public class ResourceConversionServiceTest {
         Map<Class<?>, ResourceConverter<?>> converters = service.getConvertersByClass();
 
         assertThat(converters).isNotEmpty();
-        assertThat(converters.values()).extracting("class").contains(FastJsonResourceConverter.class, StringResourceConverter.class, ByteArrayConverter.class);
+        assertThat(converters.values()).extracting("class").contains(FastJsonResourceConverter.class, StringResourceConverter.class, ByteArrayConverter.class, InputStreamConverter.class);
     }
 
     @Test

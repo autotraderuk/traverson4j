@@ -25,10 +25,11 @@ public class ResourceConversionService {
      */
     public static ResourceConversionService getInstance() {
         if (instance == null) {
-            ResourceConversionService conversionService = new ResourceConversionService(new LinkedHashMap<Class<?>, ResourceConverter<?>>());
+            ResourceConversionService conversionService = new ResourceConversionService(new LinkedHashMap<>());
             conversionService.addConverter(new FastJsonResourceConverter());
             conversionService.addConverter(new StringResourceConverter());
             conversionService.addConverter(new ByteArrayConverter());
+            conversionService.addConverter(new InputStreamConverter());
             for (ResourceConverter resourceConverter : ServiceLoader.load(ResourceConverter.class)) {
                 conversionService.addConverter(resourceConverter);
             }
