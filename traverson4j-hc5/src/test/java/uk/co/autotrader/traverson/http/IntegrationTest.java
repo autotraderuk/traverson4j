@@ -46,8 +46,9 @@ public class IntegrationTest {
                 .willReturn(WireMock.status(200).withBody(htmlBody)));
 
         Response<InputStream> response = traverson.from("http://localhost:8089").get(InputStream.class);
-
-        assertThat(response.getResource().readAllBytes()).isEqualTo(htmlBody.getBytes(StandardCharsets.UTF_8));
+        try (InputStream inputStream = response.getResource()) {
+            assertThat(inputStream.readAllBytes()).isEqualTo(htmlBody.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     @Test
