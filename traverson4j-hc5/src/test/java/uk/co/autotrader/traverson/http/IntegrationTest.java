@@ -45,6 +45,20 @@ public class IntegrationTest {
         wireMockServer.stubFor(get(urlEqualTo("/"))
                 .willReturn(WireMock.status(200).withBody(htmlBody)));
 
+        Response<String> response = traverson.from("http://localhost:8089")
+                .withHeader("Accept", "content-type")
+                .get(String.class);
+
+        assertThat(response.getResource()).isEqualTo(htmlBody);
+        wireMockServer.verify(getRequestedFor(urlPathEqualTo("/"))
+                .withHeader("Accept", equalTo("content-type")));
+    }
+
+    @Test
+    public void acceptHeaderCanBeSet() throws IOException {
+        String htmlBody = "<html></html>";
+        wireMockServer.stubFor(get(urlEqualTo("/")).willReturn(WireMock.status(200).withBody(htmlBody)));
+
         Response<InputStream> response = traverson.from("http://localhost:8089").get(InputStream.class);
         try (InputStream inputStream = response.getResource()) {
             assertThat(inputStream.readAllBytes()).isEqualTo(htmlBody.getBytes(StandardCharsets.UTF_8));
