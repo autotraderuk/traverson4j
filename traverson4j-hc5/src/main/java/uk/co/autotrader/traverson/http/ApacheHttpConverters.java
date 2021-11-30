@@ -46,7 +46,9 @@ public class ApacheHttpConverters {
 
         request.getHeaders().forEach(requestBuilder::addHeader);
 
-        requestBuilder.addHeader("Accept", request.getAcceptMimeType());
+        if (request.getAcceptMimeType() != null) {
+            requestBuilder.addHeader("Accept", request.getAcceptMimeType());
+        }
 
         Body body = request.getBody();
         if (body != null) {
