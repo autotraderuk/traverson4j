@@ -10,7 +10,6 @@ import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
@@ -19,9 +18,9 @@ import uk.co.autotrader.traverson.exception.ConversionException;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -63,9 +62,8 @@ public class ApacheHttpConverters {
         Response<T> response = new Response<>();
         response.setUri(uri);
         response.setStatusCode(httpResponse.getCode());
-        for (Header responseHeader : httpResponse.getHeaders()) {
-            response.addResponseHeader(responseHeader.getName(), responseHeader.getValue());
-        }
+        Arrays.asList(httpResponse.getHeaders()).forEach(header ->
+                response.addResponseHeader(header.getName(), header.getValue()));
 
         HttpEntity httpEntity = httpResponse.getEntity();
         if (httpEntity != null) {
