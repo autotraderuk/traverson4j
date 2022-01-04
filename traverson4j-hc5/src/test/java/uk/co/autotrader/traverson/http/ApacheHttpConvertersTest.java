@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
+import uk.co.autotrader.traverson.exception.ConversionException;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.InputStream;
@@ -137,15 +138,13 @@ public class ApacheHttpConvertersTest {
 
     @Test
     public void toResponse_BuildsResponseCorrectly() throws Exception {
-        HttpRequest request =  mock(HttpRequest.class);
         URI requestUri = new URI("http://localhost");
 
-        when(request.getUri()).thenReturn(requestUri);
         when(httpResponse.getCode()).thenReturn(200);
         when(httpResponse.getHeaders()).thenReturn(new Header[]{new BasicHeader("Location", "http://localhost/new")});
 
 
-        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, String.class, request.getUri());
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, String.class, requestUri);
 
         assertThat(response).isNotNull();
         assertThat(response.getUri()).isEqualTo(requestUri);
@@ -156,21 +155,49 @@ public class ApacheHttpConvertersTest {
 
     @Test
     public void toResponse_GivenResponseHasEntity_ConvertsAndSetsResource() throws Exception {
-        HttpRequest request =  mock(HttpRequest.class);
         URI requestUri = new URI("http://localhost");
         String expectedJson = "{'name':'test'}";
         InputStream inputStream = Mockito.mock(InputStream.class);
 
-        when(request.getUri()).thenReturn(requestUri);
         when(httpResponse.getEntity()).thenReturn(httpEntity);
         when(httpEntity.getContent()).thenReturn(inputStream);
         when(conversionService.convert(inputStream, String.class)).thenReturn(expectedJson);
         when(httpResponse.getCode()).thenReturn(202);
         when(httpResponse.getHeaders()).thenReturn(new Header[0]);
 
-        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, String.class, request.getUri());
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, String.class, requestUri);
 
         assertThat(response.getResource()).isEqualTo(expectedJson);
+    }
+
+    @Test
+    public void toResponse_GivenResponseHasEntity_AndIsErrorResponse_ConvertsAndSetsError() throws Exception {
+        InputStream inputStream = Mockito.mock(InputStream.class);
+        when(httpEntity.getContent()).thenReturn(inputStream);
+        when(httpResponse.getEntity()).thenReturn(httpEntity);
+        when(httpResponse.getCode()).thenReturn(400);
+        when(httpResponse.getHeaders()).thenReturn(new Header[0]);
+        when(conversionService.convert(inputStream, String.class)).thenReturn("error");
+
+        Response<Integer> response = apacheHttpUriConverter.toResponse(httpResponse, Integer.class, null);
+
+        assertThat(response.getResource()).isNull();
+        assertThat(response.getError()).isEqualTo("error");
+    }
+
+    @Test
+    public void toResponse_GivenResponseHasEntity_AndIsErrorResponse_IgnoresConversionError() throws Exception {
+        InputStream inputStream = Mockito.mock(InputStream.class);
+        when(httpEntity.getContent()).thenReturn(inputStream);
+        when(httpResponse.getEntity()).thenReturn(httpEntity);
+        when(httpResponse.getCode()).thenReturn(400);
+        when(httpResponse.getHeaders()).thenReturn(new Header[0]);
+        when(conversionService.convert(inputStream, String.class)).thenThrow(new ConversionException(""));
+
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, String.class, null);
+
+        assertThat(response.getResource()).isNull();
+        assertThat(response.getError()).isNull();
     }
 
     @Test
