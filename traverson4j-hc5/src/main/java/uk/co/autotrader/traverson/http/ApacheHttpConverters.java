@@ -15,6 +15,7 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
+import uk.co.autotrader.traverson.exception.ConversionException;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.IOException;
@@ -68,8 +69,15 @@ public class ApacheHttpConverters {
 
         HttpEntity httpEntity = httpResponse.getEntity();
         if (httpEntity != null) {
-            InputStream content = httpEntity.getContent();
-            response.setResource(conversionService.convert(content, returnType));
+            if (httpResponse.getCode() >= 200 && httpResponse.getCode() < 300) {
+                response.setResource(conversionService.convert(httpEntity.getContent(), returnType));
+            } else {
+                try {
+                    response.setError(conversionService.convert(httpEntity.getContent(), String.class));
+                } catch (ConversionException ignore) {
+
+                }
+            }
         }
         return response;
     }
