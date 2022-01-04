@@ -189,6 +189,21 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
+    public void toResponse_GivenResponseHasEntity_AndIsInfoResponse_ConvertsAndSetsError() throws Exception {
+        InputStream inputStream = Mockito.mock(InputStream.class);
+        when(httpEntity.getContent()).thenReturn(inputStream);
+        when(httpResponse.getEntity()).thenReturn(httpEntity);
+        when(httpResponse.getCode()).thenReturn(100);
+        when(httpResponse.getHeaders()).thenReturn(new Header[0]);
+        when(conversionService.convert(inputStream, String.class)).thenReturn("error");
+
+        Response<Integer> response = apacheHttpUriConverter.toResponse(httpResponse, Integer.class, null);
+
+        assertThat(response.getResource()).isNull();
+        assertThat(response.getError()).isEqualTo("error");
+    }
+
+    @Test
     public void toResponse_GivenResponseHasEntity_AndIsErrorResponse_IgnoresConversionError() throws Exception {
         InputStream inputStream = Mockito.mock(InputStream.class);
         when(httpEntity.getContent()).thenReturn(inputStream);
