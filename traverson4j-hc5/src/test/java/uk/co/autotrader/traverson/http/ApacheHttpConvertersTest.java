@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
+import uk.co.autotrader.traverson.exception.ConversionException;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.InputStream;
@@ -200,6 +201,21 @@ public class ApacheHttpConvertersTest {
 
         assertThat(response.getResource()).isNull();
         assertThat(response.getError()).isEqualTo("error");
+    }
+
+    @Test
+    public void toResponse_GivenResponseHasEntity_AndIsErrorResponse_IgnoresConversionError() throws Exception {
+        InputStream inputStream = Mockito.mock(InputStream.class);
+        when(httpEntity.getContent()).thenReturn(inputStream);
+        when(httpResponse.getEntity()).thenReturn(httpEntity);
+        when(httpResponse.getCode()).thenReturn(400);
+        when(httpResponse.getHeaders()).thenReturn(new Header[0]);
+        when(conversionService.convert(inputStream, String.class)).thenThrow(new ConversionException(""));
+
+        Response<String> response = apacheHttpUriConverter.toResponse(httpResponse, String.class, null);
+
+        assertThat(response.getResource()).isNull();
+        assertThat(response.getError()).isNull();
     }
 
     @Test
