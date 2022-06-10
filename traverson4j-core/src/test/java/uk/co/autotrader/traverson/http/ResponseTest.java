@@ -26,13 +26,11 @@ public class ResponseTest {
         response.setStatusCode(200);
         response.setUri(uri);
         response.setResponseHeaders(headers);
-        response.setError("error");
 
         assertThat(response.getResource()).isEqualTo(resource);
         assertThat(response.getStatusCode()).isEqualTo(200);
         assertThat(response.getUri()).isEqualTo(uri);
         assertThat(response.getResponseHeaders()).isEqualTo(headers);
-        assertThat(response.getError()).isEqualTo("error");
     }
 
     @Test

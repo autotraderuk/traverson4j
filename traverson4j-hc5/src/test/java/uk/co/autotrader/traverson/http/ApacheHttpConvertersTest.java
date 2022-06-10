@@ -4,10 +4,7 @@ import org.apache.hc.client5.http.auth.AuthCache;
 import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.junit.Before;
 import org.junit.Test;
@@ -201,16 +198,6 @@ public class ApacheHttpConvertersTest {
 
         assertThat(response.getResource()).isNull();
         assertThat(response.getError()).isNull();
-    }
-
-    @Test
-    public void toResponse_noEntity_DoesNotConvert() throws Exception {
-        when(httpResponse.getCode()).thenReturn(200);
-        when(httpResponse.getHeaders()).thenReturn(new Header[0]);
-
-        apacheHttpUriConverter.toResponse(httpResponse, String.class, null);
-
-        verifyNoInteractions(conversionService);
     }
 
     @Test
