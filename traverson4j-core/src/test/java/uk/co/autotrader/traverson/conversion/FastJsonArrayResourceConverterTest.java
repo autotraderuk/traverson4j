@@ -1,8 +1,8 @@
 package uk.co.autotrader.traverson.conversion;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import org.assertj.core.data.MapEntry;
 import org.junit.Before;
 import org.junit.Test;
 import uk.co.autotrader.traverson.exception.ConversionException;
@@ -14,34 +14,37 @@ import java.nio.charset.StandardCharsets;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class FastJsonResourceConverterTest {
+public class FastJsonArrayResourceConverterTest {
 
-    private FastJsonResourceConverter converter;
+    private FastJsonArrayResourceConverter converter;
 
     @Before
     public void setUp() {
-        converter = new FastJsonResourceConverter();
+        converter = new FastJsonArrayResourceConverter();
     }
 
     @Test
     public void getDestinationType_ReturnsJSONObject() {
-        assertThat(converter.getDestinationType()).isEqualTo(JSONObject.class);
+        assertThat(converter.getDestinationType()).isEqualTo(JSONArray.class);
     }
 
     @Test
     public void convert_GivenJsonString_ParsesJsonCorrectly() {
-        String resourceAsString = "{'name':'test', 'anotherName':'comes before the first one alphabetically'}";
+        String resourceAsString = "[{'name':'one'},{'name':'two'}]";
 
-        JSONObject resource = converter.convert(toInputStream(resourceAsString), JSONObject.class);
+        JSONArray resource = converter.convert(toInputStream(resourceAsString), JSONArray.class);
 
-        assertThat(resource).isNotNull().containsExactly(MapEntry.entry("name", "test"), MapEntry.entry("anotherName", "comes before the first one alphabetically"));
+        assertThat(resource).isEqualTo(
+                new JSONArray()
+                        .fluentAdd(new JSONObject().fluentPut("name", "one"))
+                        .fluentAdd(new JSONObject().fluentPut("name", "two")));
     }
 
     @Test
     public void convert_GivenXMLString_ThrowsConversionException() {
         final String resourceAsString = "<xml><_links><self><href>http://localhost</href></self></_links></xml>";
 
-        assertThatThrownBy(() -> converter.convert(toInputStream(resourceAsString), JSONObject.class))
+        assertThatThrownBy(() -> converter.convert(toInputStream(resourceAsString), JSONArray.class))
                 .isInstanceOf(ConversionException.class)
                 .hasCauseInstanceOf(JSONException.class)
                 .matches(object -> {
@@ -54,16 +57,7 @@ public class FastJsonResourceConverterTest {
     public void convert_GivenEmptyString_ReturnNull() {
         String resourceAsString = "";
 
-        JSONObject resource = converter.convert(toInputStream(resourceAsString), JSONObject.class);
-
-        assertThat(resource).isNull();
-    }
-
-    @Test
-    public void convert_GivenNullString_ReturnNull() {
-        String resourceAsString = "";
-
-        JSONObject resource = converter.convert(toInputStream(resourceAsString), JSONObject.class);
+        JSONArray resource = converter.convert(toInputStream(resourceAsString), JSONArray.class);
 
         assertThat(resource).isNull();
     }
@@ -72,3 +66,4 @@ public class FastJsonResourceConverterTest {
         return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
     }
 }
+

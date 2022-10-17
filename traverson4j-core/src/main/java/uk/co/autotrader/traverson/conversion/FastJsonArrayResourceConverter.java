@@ -1,27 +1,27 @@
 package uk.co.autotrader.traverson.conversion;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.io.InputStream;
 
-class FastJsonResourceConverter implements ResourceConverter<JSONObject> {
+public class FastJsonArrayResourceConverter implements ResourceConverter<JSONArray> {
 
     @Override
-    public Class<JSONObject> getDestinationType() {
-        return JSONObject.class;
+    public Class<JSONArray> getDestinationType() {
+        return JSONArray.class;
     }
 
     @Override
-    public JSONObject convert(InputStream resource, Class<? extends JSONObject> returnType) {
+    public JSONArray convert(InputStream resource, Class<? extends JSONArray> returnType) {
         String resourceAsString = null;
         try {
             resourceAsString = new StringResourceConverter().convert(resource, String.class);
-            return JSONObject.parseObject(resourceAsString, Feature.OrderedField);
+            return JSONArray.parseArray(resourceAsString);
         } catch (JSONException ex) {
             throw new ConversionException("Failed to parse to JSONObject", resourceAsString, ex);
         }
     }
 }
+
