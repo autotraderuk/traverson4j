@@ -1,5 +1,6 @@
 package uk.co.autotrader.traverson.conversion;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
@@ -37,7 +38,7 @@ public class ResourceConversionServiceTest {
         Map<Class<?>, ResourceConverter<?>> converters = service.getConvertersByClass();
 
         assertThat(converters).isNotEmpty();
-        assertThat(converters.values()).extracting("class").contains(FastJsonObjectResourceConverter.class, StringResourceConverter.class, ByteArrayConverter.class, InputStreamConverter.class);
+        assertThat(converters.values()).extracting("class").contains(FastJsonObjectResourceConverter.class, FastJsonArrayResourceConverter.class, StringResourceConverter.class, ByteArrayConverter.class, InputStreamConverter.class);
     }
 
     @Test
@@ -59,12 +60,21 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenRequestForFastJSON_EnsuresTheFastJsonConverterIsLoaded() {
+    public void convert_GivenRequestForFastJSON_EnsuresTheFastJsonObjectConverterIsLoaded() {
         String resourceAsString = "{'name':'test'}";
 
         JSONObject resource = service.convert(toInputStream(resourceAsString), JSONObject.class);
 
         assertThat(resource).isNotNull().containsEntry("name", "test");
+    }
+
+    @Test
+    public void convert_GivenRequestForFastJSON_EnsuresTheFastJsonArrayConverterIsLoaded() {
+        String resourceAsString = "[{'name':'test'}]";
+
+        JSONArray resource = service.convert(toInputStream(resourceAsString), JSONArray.class);
+
+        assertThat(resource).isNotNull().isEqualTo(new JSONArray().fluentAdd(new JSONObject().fluentPut("name", "test")));
     }
 
 
