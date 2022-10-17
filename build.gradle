@@ -124,6 +124,13 @@ subprojects {
                             organization = "Auto Trader"
                             organizationUrl = "https://www.autotrader.co.uk/"
                         }
+                        developer {
+                            id = 'shaunstorey'
+                            name = 'Shaun Storey'
+                            email = 'Shaun.Storey@autotrader.co.uk'
+                            organization = "Auto Trader"
+                            organizationUrl = "https://www.autotrader.co.uk/"
+                        }
                     }
                     scm {
                         connection = 'scm:git:git://github.com/autotraderuk/traverson4j.git'
