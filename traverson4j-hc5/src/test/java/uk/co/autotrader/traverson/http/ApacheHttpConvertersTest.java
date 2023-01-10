@@ -184,7 +184,7 @@ public class ApacheHttpConvertersTest {
 
         apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
 
-        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> <any protocol>://<any host>:<any port>=[principal: username]}");
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("[<any auth scheme> <any realm> <any protocol>://<any host>:<any port>]");
         assertThat(authCache.get(new HttpHost("hostname"))).isNull();
     }
 
@@ -200,7 +200,7 @@ public class ApacheHttpConvertersTest {
 
         apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
 
-        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> http://hostname:<any port>=[principal: username]}");
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("[<any auth scheme> <any realm> http://hostname:<any port>]");
         assertThat(authCache.get(new HttpHost("hostname"))).isNull();
     }
 
@@ -217,7 +217,7 @@ public class ApacheHttpConvertersTest {
 
         apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
 
-        assertThat(basicCredentialsProvider.toString()).isEqualTo("{<any auth scheme> <any realm> http://hostname:<any port>=[principal: username]}");
+        assertThat(basicCredentialsProvider.toString()).isEqualTo("[<any auth scheme> <any realm> http://hostname:<any port>]");
         assertThat(authCache.get(new HttpHost("hostname")).getName()).isEqualTo("Basic");
     }
 
