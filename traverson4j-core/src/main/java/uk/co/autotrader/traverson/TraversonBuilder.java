@@ -1,6 +1,6 @@
 package uk.co.autotrader.traverson;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import uk.co.autotrader.traverson.http.AuthCredential;
 import uk.co.autotrader.traverson.exception.IllegalHttpStatusException;
 import uk.co.autotrader.traverson.http.*;

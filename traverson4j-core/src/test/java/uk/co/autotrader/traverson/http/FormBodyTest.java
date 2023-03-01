@@ -1,17 +1,17 @@
 package uk.co.autotrader.traverson.http;
 
 import com.google.common.base.Charsets;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class FormBodyTest {
+@ExtendWith(MockitoExtension.class)
+class FormBodyTest {
 
     @Test
-    public void init_GivenValues_SetsProperties() {
+    void init_GivenValues_SetsProperties() {
 
         FormDataBody body = new FormDataBody(Charsets.UTF_8, new FormDataBody.NameValuePair("name", "value"));
 

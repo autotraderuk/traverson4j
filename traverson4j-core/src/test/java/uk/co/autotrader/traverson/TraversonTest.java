@@ -2,19 +2,19 @@ package uk.co.autotrader.traverson;
 
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.http.Request;
 import uk.co.autotrader.traverson.http.TraversonClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TraversonTest {
+@ExtendWith(MockitoExtension.class)
+class TraversonTest {
 
     @Mock
     private TraversonClient traversonClient;
@@ -22,7 +22,7 @@ public class TraversonTest {
     private ArgumentCaptor<Request> requestCaptor;
 
     @Test
-    public void from_GivenUrl_ReturnsTraversonBuilder() throws Exception {
+    void from_GivenUrl_ReturnsTraversonBuilder() throws Exception {
         Traverson traverson = new Traverson(traversonClient);
 
         TraversonBuilder builder = traverson.from("https://localhost:8080");

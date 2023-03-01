@@ -1,6 +1,6 @@
 package uk.co.autotrader.traverson.http;
 
-import com.alibaba.fastjson.util.IOUtils;
+import com.alibaba.fastjson2.util.IOUtils;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;

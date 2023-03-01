@@ -1,58 +1,60 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.io.Resources;
 import org.assertj.core.api.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.stream.Stream;
 
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-@RunWith(Parameterized.class)
-public class RelByArrayIndexDiscovererTest {
+class RelByArrayIndexDiscovererTest {
 
-    @Parameters(name = "{0}")
-    public static Object[][] arrayIndexHandlers() {
-        return new Object[][]{
-                {new LinksResolver()},
-                {new EmbeddedResolver()}
-        };
+    private static Stream<Arguments> arrayIndexHandlers() {
+        return Stream.of(
+                Arguments.of(new LinksResolver()),
+                Arguments.of(new EmbeddedResolver())
+        );
     }
 
-    public RelByArrayIndexDiscovererTest(HalEntityResolver testEntityResolver) {
-        this.testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
-    }
+    private RelByArrayIndexDiscoverer testHandler;
 
-    private final RelByArrayIndexDiscoverer testHandler;
-
-    @Test
-    public void findHref_GivenNonMatchingSyntax_ReturnsNull() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenNonMatchingSyntax_ReturnsNull(HalEntityResolver testEntityResolver) throws Exception {
+        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
         assertThat(this.testHandler.findHref(testJson(), "self")).isNull();
     }
 
-    @Test
-    public void findHref_GivenNonNumber_ReturnsNull() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenNonNumber_ReturnsNull(HalEntityResolver testEntityResolver) throws Exception {
+        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
         assertThat(this.testHandler.findHref(testJson(), "array[first]")).isNull();
     }
 
-    @Test
-    public void findHref_GivenNegativeNumber_ReturnsNull() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenNegativeNumber_ReturnsNull(HalEntityResolver testEntityResolver) throws Exception {
+        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
         assertThat(this.testHandler.findHref(testJson(), "array[-1]")).isNull();
     }
 
-    @Test
-    public void findHref_GivenRelDoesntExist_throwsException() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenRelDoesntExist_throwsException(HalEntityResolver testEntityResolver) throws Exception {
         try {
+            testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
             this.testHandler.findHref(testJson(), "doesnt-exist[0]");
             fail("Should throw exception");
         } catch (UnknownRelException e) {
@@ -64,9 +66,11 @@ public class RelByArrayIndexDiscovererTest {
         }
     }
 
-    @Test
-    public void findHref_GivenNonArrayRel_throwsException() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenNonArrayRel_throwsException(HalEntityResolver testEntityResolver) throws Exception {
         try {
+            testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
             this.testHandler.findHref(testJson(), "not-array[0]");
             fail("Should throw exception");
         } catch (UnknownRelException e) {
@@ -78,10 +82,12 @@ public class RelByArrayIndexDiscovererTest {
         }
     }
 
-    @Test
-    public void findHref_GivenResourceWithNoEmbeddedAndUnknownRel_throwsException() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenResourceWithNoEmbeddedAndUnknownRel_throwsException(HalEntityResolver testEntityResolver) throws Exception {
         try {
             JSONObject resource = JSON.parseObject(Resources.toString(getResource("hal-simple.json"), Charset.defaultCharset()));
+            testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
             this.testHandler.findHref(resource, "not-exists[0]");
             fail("Should throw exception");
         } catch (UnknownRelException e) {
@@ -90,19 +96,25 @@ public class RelByArrayIndexDiscovererTest {
         }
     }
 
-    @Test
-    public void findHref_GivenArrayPosition_ReturnsHref() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenArrayPosition_ReturnsHref(HalEntityResolver testEntityResolver) throws Exception {
+        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
         assertThat(this.testHandler.findHref(testJson(), "array[0]")).isEqualTo("http://first");
     }
 
-    @Test
-    public void findHref_GivenSecondArrayPosition_ReturnsHref() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenSecondArrayPosition_ReturnsHref(HalEntityResolver testEntityResolver) throws Exception {
+        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
         assertThat(this.testHandler.findHref(testJson(), "array[1]")).isEqualTo("http://second");
     }
 
-    @Test
-    public void findHref_GivenNonExistentArrayPosition_throwsException() throws Exception {
+    @ParameterizedTest
+    @MethodSource("arrayIndexHandlers")
+    void findHref_GivenNonExistentArrayPosition_throwsException(HalEntityResolver testEntityResolver) throws Exception {
         try {
+            testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
             this.testHandler.findHref(testJson(), "array[2]");
             fail("Should throw exception");
         } catch (UnknownRelException e) {

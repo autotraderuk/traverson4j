@@ -1,29 +1,29 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.io.Resources;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.Charset;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class EmbeddedArrayNameHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class EmbeddedArrayNameHandlerTest {
 
     private EmbeddedArrayNameHandler handler;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         this.handler = new EmbeddedArrayNameHandler();
     }
 
     @Test
-    public void findRef_GivenNamedEntityExists_ReturnsSelfLinkOfUrl() throws Exception {
+    void findRef_GivenNamedEntityExists_ReturnsSelfLinkOfUrl() throws Exception {
         String fileContents = Resources.toString(Resources.getResource("hal-embedded.json"), Charset.defaultCharset());
         JSONObject json = JSON.parseObject(fileContents);
 
@@ -33,7 +33,7 @@ public class EmbeddedArrayNameHandlerTest {
     }
 
     @Test
-    public void findRef_GivenNameOfEntityThatDoesNotExist_ReturnsNull() throws Exception {
+    void findRef_GivenNameOfEntityThatDoesNotExist_ReturnsNull() throws Exception {
         String fileContents = Resources.toString(Resources.getResource("hal-embedded.json"), Charset.defaultCharset());
         JSONObject json = JSON.parseObject(fileContents);
 
@@ -43,7 +43,7 @@ public class EmbeddedArrayNameHandlerTest {
     }
 
     @Test
-    public void findRef_GivenResourceWithNoEmbedded_ReturnsNull() throws Exception {
+    void findRef_GivenResourceWithNoEmbedded_ReturnsNull() throws Exception {
         String fileContents = Resources.toString(Resources.getResource("hal-simple.json"), Charset.defaultCharset());
         JSONObject json = JSON.parseObject(fileContents);
 

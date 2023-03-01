@@ -1,46 +1,45 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.assertj.core.api.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
+
+import java.util.stream.Stream;
 
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.condition.AnyOf.anyOf;
 
-@RunWith(Parameterized.class)
-public class RelByArrayPropertyDiscovererTest {
+class RelByArrayPropertyDiscovererTest {
 
-    @Parameters
-    public static Object[][] handlers() {
-        return new Object[][]{
-                {new LinksResolver()},
-                {new EmbeddedResolver()}
-        };
+    private static Stream<Arguments> handlers() {
+        return Stream.of(
+                Arguments.of(new LinksResolver()),
+                Arguments.of(new EmbeddedResolver())
+        );
     }
 
-    private final RelByArrayPropertyDiscoverer testSubject;
+    private RelByArrayPropertyDiscoverer testSubject;
 
-    public RelByArrayPropertyDiscovererTest(HalEntityResolver halEntityResolver) {
-        this.testSubject = new RelByArrayPropertyDiscoverer(halEntityResolver);
-    }
-
-    @Test
-    public void findHref_GivenRelWithoutProperty_ReturnsNull() throws Exception {
+    @ParameterizedTest
+    @MethodSource("handlers")
+    void findHref_GivenRelWithoutProperty_ReturnsNull(HalEntityResolver halEntityResolver) throws Exception {
+        testSubject = new RelByArrayPropertyDiscoverer(halEntityResolver);
         assertThat(this.testSubject.findHref(testJson(), "self")).isNull();
     }
 
-    @Test
-    public void findHref_GivenNonExistentRel_throwsException() throws Exception {
+    @ParameterizedTest
+    @MethodSource("handlers")
+    void findHref_GivenNonExistentRel_throwsException(HalEntityResolver halEntityResolver) throws Exception {
         try {
+            testSubject = new RelByArrayPropertyDiscoverer(halEntityResolver);
             this.testSubject.findHref(testJson(), "non-existent[key:value]");
             fail("Should throw exception");
         } catch (UnknownRelException e) {
@@ -51,14 +50,18 @@ public class RelByArrayPropertyDiscovererTest {
         }
     }
 
-    @Test
-    public void findHref_GivenRelWithPropertyThatExists_ReturnsRelatedHref() throws Exception {
+    @ParameterizedTest
+    @MethodSource("handlers")
+    void findHref_GivenRelWithPropertyThatExists_ReturnsRelatedHref(HalEntityResolver halEntityResolver) throws Exception {
+        testSubject = new RelByArrayPropertyDiscoverer(halEntityResolver);
         assertThat(this.testSubject.findHref(testJson(), "section[name:turnip]")).isEqualTo("http://turnip-link");
     }
 
-    @Test
-    public void findHref_GivenRelWithPropertyNotExisting_throwsException() throws Exception {
+    @ParameterizedTest
+    @MethodSource("handlers")
+    void findHref_GivenRelWithPropertyNotExisting_throwsException(HalEntityResolver halEntityResolver) throws Exception {
         try {
+            testSubject = new RelByArrayPropertyDiscoverer(halEntityResolver);
             this.testSubject.findHref(testJson(), "section[name:notexist]");
             fail("Should throw exception");
         } catch (UnknownRelException e) {
@@ -69,9 +72,11 @@ public class RelByArrayPropertyDiscovererTest {
         }
     }
 
-    @Test
-    public void findHref_GivenRelThatIsntArray_throwsException() throws Exception {
+    @ParameterizedTest
+    @MethodSource("handlers")
+    void findHref_GivenRelThatIsntArray_throwsException(HalEntityResolver halEntityResolver) throws Exception {
         try {
+            testSubject = new RelByArrayPropertyDiscoverer(halEntityResolver);
             this.testSubject.findHref(testJson(), "self[prop:value]");
             fail("Should throw exception");
         } catch (UnknownRelException e) {
@@ -82,8 +87,10 @@ public class RelByArrayPropertyDiscovererTest {
         }
     }
 
-    @Test
-    public void findHref_GivenRelWithDuplicateMatchingProperties_ReturnsFirstMatch() throws Exception {
+    @ParameterizedTest
+    @MethodSource("handlers")
+    void findHref_GivenRelWithDuplicateMatchingProperties_ReturnsFirstMatch(HalEntityResolver halEntityResolver) throws Exception {
+        testSubject = new RelByArrayPropertyDiscoverer(halEntityResolver);
         assertThat(this.testSubject.findHref(testJson(), "duplicates[name:dupe]")).isEqualTo("http://duplicate-link-1");
     }
 

@@ -1,8 +1,8 @@
 package uk.co.autotrader.traverson.conversion;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONException;
+import com.alibaba.fastjson2.JSONObject;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.io.InputStream;
@@ -19,7 +19,12 @@ class FastJsonResourceConverter implements ResourceConverter<JSONObject> {
         String resourceAsString = null;
         try {
             resourceAsString = new StringResourceConverter().convert(resource, String.class);
-            return JSONObject.parseObject(resourceAsString, Feature.OrderedField);
+
+            if (resourceAsString.isEmpty()) {
+                return null;
+            }
+
+            return JSON.parseObject(resourceAsString);
         } catch (JSONException ex) {
             throw new ConversionException("Failed to parse to JSONObject", resourceAsString, ex);
         }

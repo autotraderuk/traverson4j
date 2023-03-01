@@ -1,7 +1,7 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 import uk.co.autotrader.traverson.link.LinkDiscoverer;
 
@@ -56,7 +56,7 @@ class RelByArrayPropertyDiscoverer implements LinkDiscoverer {
     }
 
     private UnknownRelException createUnknownRelException(JSONObject resource, String relName, String propertyName, String propertyValue) {
-        Map<String, SortedSet<String>> rels = new HashMap<String, SortedSet<String>>();
+        Map<String, SortedSet<String>> rels = new HashMap<>();
         for (HalEntityResolver resolver : this.halEntityResolvers) {
             rels.putAll(resolver.describeRelations(resource));
         }

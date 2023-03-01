@@ -1,7 +1,8 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ class EmbeddedResolver implements HalEntityResolver {
         }
 
         Object maybeJsonArray = embeddedResources.get(relationType);
-        if (maybeJsonArray == null || !(maybeJsonArray instanceof JSONArray)) {
+        if (!(maybeJsonArray instanceof JSONArray)) {
             return new JSONArray();
         }
 
@@ -33,9 +34,9 @@ class EmbeddedResolver implements HalEntityResolver {
     public Map<String, SortedSet<String>> describeRelations(JSONObject resource) {
         JSONObject embeddedResources = getEmbeddedSection(resource);
 
-        Map<String, SortedSet<String>> relations = new HashMap<String, SortedSet<String>>();
+        Map<String, SortedSet<String>> relations = new HashMap<>();
         if (embeddedResources != null) {
-            SortedSet<String> sortedRels = new TreeSet<String>();
+            SortedSet<String> sortedRels = new TreeSet<>();
             sortedRels.addAll(embeddedResources.keySet());
             relations.put("'_embedded'", sortedRels);
         }

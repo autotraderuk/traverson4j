@@ -1,16 +1,16 @@
 package uk.co.autotrader.traverson.http;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.exception.HttpException;
 
 import java.io.IOException;
@@ -22,8 +22,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ApacheHttpTraversonClientAdapterTest {
+@ExtendWith(MockitoExtension.class)
+class ApacheHttpTraversonClientAdapterTest {
     private ApacheHttpTraversonClientAdapter clientAdapter;
     @Mock
     private CloseableHttpClient httpClient;
@@ -39,19 +39,19 @@ public class ApacheHttpTraversonClientAdapterTest {
     private Request request;
     private Response<JSONObject> expectedResponse;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         clientAdapter = new ApacheHttpTraversonClientAdapter(httpClient);
         FieldUtils.writeField(clientAdapter, "apacheHttpUriConverter", apacheHttpConverters, true);
         request = new Request();
         expectedResponse = new Response<>();
-        when(apacheHttpConverters.toRequest(request)).thenReturn(httpRequest);
-        when(apacheHttpConverters.toResponse(httpResponse, JSONObject.class, httpRequest.getUri())).thenReturn(expectedResponse);
-        when(apacheHttpConverters.toHttpClientContext(request)).thenReturn(clientContext);
     }
 
     @Test
-    public void execute_GivenGetRequest_ReturnsResponse() throws Exception {
+    void execute_GivenGetRequest_ReturnsResponse() throws Exception {
+        when(apacheHttpConverters.toRequest(request)).thenReturn(httpRequest);
+        when(apacheHttpConverters.toResponse(httpResponse, JSONObject.class, httpRequest.getUri())).thenReturn(expectedResponse);
+        when(apacheHttpConverters.toHttpClientContext(request)).thenReturn(clientContext);
         when(httpClient.execute(httpRequest, clientContext)).thenReturn(httpResponse);
 
         Response<JSONObject> response = clientAdapter.execute(request, JSONObject.class);
@@ -61,10 +61,13 @@ public class ApacheHttpTraversonClientAdapterTest {
     }
 
     @Test
-    public void execute_GivenGetRequestForInputStream_ReturnsResponseButDoesntCloseTheResponse() throws Exception {
-        when(httpClient.execute(httpRequest, clientContext)).thenReturn(httpResponse);
+    void execute_GivenGetRequestForInputStream_ReturnsResponseButDoesntCloseTheResponse() throws Exception {
         Response<InputStream> expectedStreamResponse = new Response<>();
+
+        when(apacheHttpConverters.toRequest(request)).thenReturn(httpRequest);
         when(apacheHttpConverters.toResponse(httpResponse, InputStream.class, httpRequest.getUri())).thenReturn(expectedStreamResponse);
+        when(apacheHttpConverters.toHttpClientContext(request)).thenReturn(clientContext);
+        when(httpClient.execute(httpRequest, clientContext)).thenReturn(httpResponse);
 
         Response<InputStream> response = clientAdapter.execute(request, InputStream.class);
 
@@ -73,9 +76,11 @@ public class ApacheHttpTraversonClientAdapterTest {
     }
 
     @Test
-    public void execute_GivenIOExceptionIsThrown_WrapsInTraversonException() throws Exception {
-        when(httpClient.execute(eq(httpRequest), any(HttpClientContext.class))).thenReturn(httpResponse);
+    void execute_GivenIOExceptionIsThrown_WrapsInTraversonException() throws Exception {
+        when(apacheHttpConverters.toRequest(request)).thenReturn(httpRequest);
         when(apacheHttpConverters.toResponse(httpResponse, JSONObject.class, httpRequest.getUri())).thenThrow(new IOException());
+        when(apacheHttpConverters.toHttpClientContext(request)).thenReturn(clientContext);
+        when(httpClient.execute(eq(httpRequest), any(HttpClientContext.class))).thenReturn(httpResponse);
 
         assertThatThrownBy(() -> clientAdapter.execute(request, JSONObject.class)).isInstanceOf(HttpException.class);
 
@@ -83,10 +88,13 @@ public class ApacheHttpTraversonClientAdapterTest {
     }
 
     @Test
-    public void execute_GivenRuntimeExceptionIsThrown_ClosesInputStreamAndReturnsOriginalException() throws Exception {
+    void execute_GivenRuntimeExceptionIsThrown_ClosesInputStreamAndReturnsOriginalException() throws Exception {
         NullPointerException nullPointerException = new NullPointerException();
-        when(httpClient.execute(eq(httpRequest), any(HttpClientContext.class))).thenReturn(httpResponse);
+
+        when(apacheHttpConverters.toRequest(request)).thenReturn(httpRequest);
         when(apacheHttpConverters.toResponse(httpResponse, JSONObject.class, httpRequest.getUri())).thenThrow(nullPointerException);
+        when(apacheHttpConverters.toHttpClientContext(request)).thenReturn(clientContext);
+        when(httpClient.execute(eq(httpRequest), any(HttpClientContext.class))).thenReturn(httpResponse);
 
         assertThatThrownBy(() -> clientAdapter.execute(request, JSONObject.class)).isSameAs(nullPointerException);
 
@@ -94,7 +102,7 @@ public class ApacheHttpTraversonClientAdapterTest {
     }
 
     @Test
-    public void init_SetsDefaultHttpClient() throws Exception {
+    void init_SetsDefaultHttpClient() throws Exception {
         ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
 
         assertThat(FieldUtils.readField(apacheHttpTraversonClientAdapter, "adapterClient", true)).isNotNull();

@@ -1,6 +1,6 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import uk.co.autotrader.traverson.link.LinkDiscoverer;
 
 import java.util.Arrays;

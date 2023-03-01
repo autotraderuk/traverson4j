@@ -1,6 +1,6 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 import uk.co.autotrader.traverson.link.LinkDiscoverer;
 
@@ -22,7 +22,7 @@ class LinksRelHandler implements LinkDiscoverer {
     }
 
     private SortedSet<String> sort(Set<String> set) {
-        SortedSet<String> sorted = new TreeSet<String>();
+        SortedSet<String> sorted = new TreeSet<>();
         sorted.addAll(set);
         return sorted;
     }

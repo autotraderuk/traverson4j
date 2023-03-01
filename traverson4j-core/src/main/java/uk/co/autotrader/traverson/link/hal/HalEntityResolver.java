@@ -1,7 +1,7 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 
 import java.util.Map;
 import java.util.SortedSet;

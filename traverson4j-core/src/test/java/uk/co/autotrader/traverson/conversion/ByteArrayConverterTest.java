@@ -1,7 +1,7 @@
 package uk.co.autotrader.traverson.conversion;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
@@ -14,21 +14,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ByteArrayConverterTest {
+class ByteArrayConverterTest {
     private ByteArrayConverter converter;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         converter = new ByteArrayConverter();
     }
 
     @Test
-    public void getDestinationType_ReturnsByteArrayClass() throws Exception {
+    void getDestinationType_ReturnsByteArrayClass() {
         assertThat(converter.getDestinationType()).isEqualTo(byte[].class);
     }
 
     @Test
-    public void convert_ReturnsTheInputString() throws Exception {
+    void convert_ReturnsTheInputString() throws Exception {
         byte[] bytes = new byte[] {1, 2, 3};
         InputStream inputStream = Mockito.spy(new ByteArrayInputStream(bytes));
 
@@ -37,7 +37,7 @@ public class ByteArrayConverterTest {
     }
 
     @Test
-    public void convert_WrapsIOExceptionInConversionException() throws Exception {
+    void convert_WrapsIOExceptionInConversionException() throws Exception {
         InputStream inputStream = Mockito.mock(InputStream.class);
         when(inputStream.readAllBytes()).thenThrow(new IOException());
 

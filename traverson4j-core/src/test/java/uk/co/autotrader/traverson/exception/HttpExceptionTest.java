@@ -1,15 +1,15 @@
 package uk.co.autotrader.traverson.exception;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class HttpExceptionTest {
+class HttpExceptionTest {
     @Test
-    public void init_OverridesMessageAndCauseConstructor() throws Exception {
+    void init_OverridesMessageAndCauseConstructor() {
         IOException cause = new IOException();
 
         HttpException exception = new HttpException("My Message", cause);

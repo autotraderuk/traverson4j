@@ -1,20 +1,19 @@
 package uk.co.autotrader.traverson.http.entity;
 
 import org.apache.hc.core5.http.HttpEntity;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.http.Body;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class BodyFactoryTest {
+@ExtendWith(MockitoExtension.class)
+class BodyFactoryTest {
     private BodyFactory bodyFactory;
     @Mock
     private HttpEntityConverter converter;
@@ -22,26 +21,30 @@ public class BodyFactoryTest {
     private Body body;
     @Mock
     private HttpEntity entity;
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         bodyFactory = new BodyFactory();
-        when(converter.toEntity(body)).thenReturn(entity);
     }
 
     @Test
-    public void toEntity_GivenConverterIsRegistered_ReturnsConvertedResult() throws Exception {
+    void toEntity_GivenConverterIsRegistered_ReturnsConvertedResult() {
+        when(converter.toEntity(body)).thenReturn(entity);
         BodyFactory.register(body.getClass(), converter);
         assertThat(bodyFactory.toEntity(body)).isEqualTo(entity);
     }
 
     @Test
-    public void toEntity_GivenConverterIsNotRegistered_ThrowsException() throws Exception {
-        expectedException.expect(UnsupportedOperationException.class);
-        expectedException.expectMessage("Not supported Request body, the supported types are ");
+    void toEntity_GivenConverterIsNotRegistered_ThrowsException() {
+        UnsupportedOperationException exception = Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            HttpEntity newEntity = bodyFactory.toEntity(body);
+            assertThat(newEntity).isEqualTo(entity);
+        });
 
-        assertThat(bodyFactory.toEntity(body)).isEqualTo(entity);
+        assertThat(exception.getMessage())
+                .contains("Not supported Request body, the supported types are")
+                .contains("class uk.co.autotrader.traverson.http.SimpleMultipartBody")
+                .contains("class uk.co.autotrader.traverson.http.TextBody")
+                .contains("class uk.co.autotrader.traverson.http.FormDataBody");
     }
 }

@@ -1,17 +1,16 @@
 package uk.co.autotrader.traverson;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.exception.IncompleteTraversalException;
 import uk.co.autotrader.traverson.http.*;
 import uk.co.autotrader.traverson.link.BasicLinkDiscoverer;
@@ -27,8 +26,8 @@ import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TraversonBuilderTest {
+@ExtendWith(MockitoExtension.class)
+class TraversonBuilderTest {
     private TraversonBuilder builder;
     @Mock
     private TraversonClient client;
@@ -41,11 +40,9 @@ public class TraversonBuilderTest {
     @Mock
     private Deque<String> relsToFollow;
     @Captor
-    private ArgumentCaptor<Deque<String>> relsCaptor;
+    private ArgumentCaptor<List<String>> relsCaptor;
     @Mock
     private LinkDiscoverer linkDiscoverer;
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
     @Mock
     public Response<JSONObject> firstResponse;
     @Mock
@@ -53,8 +50,8 @@ public class TraversonBuilderTest {
     @Mock
     public Response<String> stringResponse;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         builder = new TraversonBuilder(client);
         FieldUtils.writeDeclaredField(builder, "linkDiscoverer", linkDiscoverer, true);
     }
@@ -64,27 +61,27 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void from_SetsUrl() throws Exception {
+    void from_SetsUrl() throws Exception {
         assertThat(builder.from("http://localhost:8080")).isEqualTo(builder);
         assertThat(reflectionGetRequest().getUrl()).isEqualTo("http://localhost:8080");
     }
 
     @Test
-    public void json_SetsAcceptTypeAndLinkDiscoverer() throws Exception {
+    void json_SetsAcceptTypeAndLinkDiscoverer() throws Exception {
         assertThat(builder.json()).isEqualTo(builder);
         assertThat(reflectionGetRequest().getAcceptMimeType()).isEqualTo("application/json");
         assertThat(FieldUtils.readDeclaredField(builder, "linkDiscoverer", true)).isInstanceOf(BasicLinkDiscoverer.class);
     }
 
     @Test
-    public void jsoHal_SetsAcceptTypeAndLinkDiscoverer() throws Exception {
+    void jsoHal_SetsAcceptTypeAndLinkDiscoverer() throws Exception {
         assertThat(builder.jsonHal()).isEqualTo(builder);
         assertThat(reflectionGetRequest().getAcceptMimeType()).isEqualTo("application/hal+json");
         assertThat(FieldUtils.readDeclaredField(builder, "linkDiscoverer", true)).isInstanceOf(HalLinkDiscoverer.class);
     }
 
     @Test
-    public void follow_ReplacesRels() throws Exception {
+    void follow_ReplacesRels() throws Exception {
         FieldUtils.writeField(builder, "relsToFollow", relsToFollow, true);
 
         builder.follow("A", "B", "C");
@@ -95,17 +92,18 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withQueryParam_IncrementallyAddsQueryParams() throws Exception {
+    void withQueryParam_IncrementallyAddsQueryParams() throws Exception {
         assertThat(builder.withQueryParam("key1", "value1")).isEqualTo(builder);
         assertThat(builder.withQueryParam("key2", "value2")).isEqualTo(builder);
 
         Map<String, List<String>> queryParams = reflectionGetRequest().getQueryParameters();
-        assertThat(queryParams).hasSize(2);
-        assertThat(queryParams).containsOnly(entry("key1", newArrayList("value1")), entry("key2", newArrayList("value2")));
+        assertThat(queryParams)
+                .hasSize(2)
+                .containsOnly(entry("key1", newArrayList("value1")), entry("key2", newArrayList("value2")));
     }
 
     @Test
-    public void withQueryParam_SetsQueryParams() throws Exception {
+    void withQueryParam_SetsQueryParams() throws Exception {
         assertThat(builder.withQueryParam("key1", "value1")).isEqualTo(builder);
 
         List<String> value = newArrayList("value1");
@@ -114,7 +112,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withQueryParam_AddsSingleQueryParamWithMultipleValues() throws Exception {
+    void withQueryParam_AddsSingleQueryParamWithMultipleValues() throws Exception {
         assertThat(builder.withQueryParam("key", "value1", "value2", "value3")).isEqualTo(builder);
         Map<String, List<String>> queryParams = reflectionGetRequest().getQueryParameters();
         assertThat(queryParams).hasSize(1);
@@ -124,7 +122,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withQueryParam_AddsQueryParamsForExistingKeysAndDoesNotOverwrite() throws Exception {
+    void withQueryParam_AddsQueryParamsForExistingKeysAndDoesNotOverwrite() throws Exception {
         builder.withQueryParam("key", "value1");
         Map<String, List<String>> queryParams = reflectionGetRequest().getQueryParameters();
 
@@ -138,7 +136,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withTemplateParam_IncrementallyAddsTemplateParams() throws Exception {
+    void withTemplateParam_IncrementallyAddsTemplateParams() throws Exception {
         assertThat(builder.withTemplateParam("key1", "value1")).isEqualTo(builder);
         assertThat(builder.withTemplateParam("key2", "value2")).isEqualTo(builder);
         Map<String, List<String>> templateParams = reflectionGetRequest().getTemplateParams();
@@ -148,7 +146,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withTemplateParam_AddsSingleTemplateParamWithMultipleValues() throws Exception {
+    void withTemplateParam_AddsSingleTemplateParamWithMultipleValues() throws Exception {
         assertThat(builder.withTemplateParam("key", "value1", "value2", "value3")).isEqualTo(builder);
         Map<String, List<String>> templateParams = reflectionGetRequest().getTemplateParams();
         assertThat(templateParams).hasSize(1);
@@ -158,7 +156,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withTemplateParam_SetsQueryParams() throws Exception {
+    void withTemplateParam_SetsQueryParams() throws Exception {
         assertThat(builder.withTemplateParam("key1", "value1")).isEqualTo(builder);
 
         Map<String, List<String>> templateParams = Collections.singletonMap("key1", Arrays.asList("value1"));
@@ -166,7 +164,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withTemplateParam_AddsTemplateParamsForExistingKeysAndDoesNotOverwrite() throws Exception {
+    void withTemplateParam_AddsTemplateParamsForExistingKeysAndDoesNotOverwrite() throws Exception {
         builder.withTemplateParam("key", "value1");
         Map<String, List<String>> templateParams = reflectionGetRequest().getTemplateParams();
 
@@ -180,7 +178,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void addHeader_IncrementallyAddsHeaders() throws Exception {
+    void addHeader_IncrementallyAddsHeaders() throws Exception {
         assertThat(builder.withHeader("key1", "value1")).isEqualTo(builder);
         assertThat(builder.withHeader("key2", "value2")).isEqualTo(builder);
         Map<String, String> headers = reflectionGetRequest().getHeaders();
@@ -188,7 +186,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withHeaders_SetsHeaders() throws Exception {
+    void withHeaders_SetsHeaders() throws Exception {
         Map<String, String> headers = new HashMap<>();
         headers.put("key1", "value1");
         assertThat(builder.withHeader("key1", "value1")).isEqualTo(builder);
@@ -196,7 +194,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withAuth_SetsCredentials() throws Exception {
+    void withAuth_SetsCredentials() throws Exception {
         assertThat(builder.withAuth("user", "password")).isEqualTo(builder);
         List<AuthCredential> authCredentials = reflectionGetRequest().getAuthCredentials();
 
@@ -209,7 +207,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withAuth_SetsCredentialsIncludingHostname() throws Exception {
+    void withAuth_SetsCredentialsIncludingHostname() throws Exception {
         assertThat(builder.withAuth("user", "password", "autotrader.co.uk")).isEqualTo(builder);
         List<AuthCredential> authCredentials = reflectionGetRequest().getAuthCredentials();
 
@@ -222,7 +220,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withAuth_SetsCredentialsIncludingPreemptiveAuthentication() throws Exception {
+    void withAuth_SetsCredentialsIncludingPreemptiveAuthentication() throws Exception {
         assertThat(builder.withAuth("user", "password", "autotrader.co.uk", true)).isEqualTo(builder);
         List<AuthCredential> authCredentials = reflectionGetRequest().getAuthCredentials();
 
@@ -235,7 +233,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void withAuth_AppendsCredentials() throws Exception {
+    void withAuth_AppendsCredentials() throws Exception {
         assertThat(builder.withAuth("user", "password", "autotrader.co.uk").withAuth("user2", "password2")).isEqualTo(builder);
         List<AuthCredential> authCredentials = reflectionGetRequest().getAuthCredentials();
 
@@ -250,7 +248,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void get_GivenInputs_BuildsRequestAndExecutes() throws Exception {
+    void get_GivenInputs_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(JSONObject.class))).thenReturn(firstResponse);
 
         Response response = builder.get();
@@ -262,7 +260,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void post_GivenInputs_BuildsRequestAndExecutes() throws Exception {
+    void post_GivenInputs_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(JSONObject.class))).thenReturn(firstResponse);
 
         Response response = builder.post(body);
@@ -274,7 +272,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void post_GivenInputsAndReturnType_BuildsRequestAndExecutes() throws Exception {
+    void post_GivenInputsAndReturnType_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(String.class))).thenReturn(stringResponse);
 
         Response<String> response = builder.post(body, String.class);
@@ -286,7 +284,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void put_GivenInputs_BuildsRequestAndExecutes() throws Exception {
+    void put_GivenInputs_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(JSONObject.class))).thenReturn(firstResponse);
 
         Response response = builder.put(body);
@@ -298,7 +296,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void put_GivenInputsAndReturnType_BuildsRequestAndExecutes() throws Exception {
+    void put_GivenInputsAndReturnType_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(String.class))).thenReturn(stringResponse);
 
         Response response = builder.put(body, String.class);
@@ -310,7 +308,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void patch_GivenInputs_BuildsRequestAndExecutes() throws Exception {
+    void patch_GivenInputs_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(JSONObject.class))).thenReturn(firstResponse);
 
         Response response = builder.patch(body);
@@ -323,7 +321,7 @@ public class TraversonBuilderTest {
 
 
     @Test
-    public void patch_GivenInputsAndReturnType_BuildsRequestAndExecutes() throws Exception {
+    void patch_GivenInputsAndReturnType_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(String.class))).thenReturn(stringResponse);
 
         Response response = builder.patch(body, String.class);
@@ -335,7 +333,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void delete_GivenInputs_BuildsRequestAndExecutes() throws Exception {
+    void delete_GivenInputs_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(JSONObject.class))).thenReturn(firstResponse);
 
         Response response = builder.delete();
@@ -347,7 +345,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void delete_GivenInputsAndReturnType_BuildsRequestAndExecutes() throws Exception {
+    void delete_GivenInputsAndReturnType_BuildsRequestAndExecutes() throws Exception {
         when(client.execute(any(Request.class), eq(String.class))).thenReturn(stringResponse);
 
         Response response = builder.delete(String.class);
@@ -359,7 +357,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void get_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
+    void get_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
         when(firstResponse.isSuccessful()).thenReturn(true);
         when(firstResponse.getResource()).thenReturn(resource);
         when(client.execute(reflectionGetRequest(), JSONObject.class)).thenReturn(firstResponse).thenReturn(secondResponse);
@@ -375,7 +373,7 @@ public class TraversonBuilderTest {
 
 
     @Test
-    public void post_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
+    void post_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
         when(firstResponse.isSuccessful()).thenReturn(true);
         when(firstResponse.getResource()).thenReturn(resource);
         when(client.execute(reflectionGetRequest(), JSONObject.class)).thenReturn(firstResponse).thenReturn(secondResponse);
@@ -390,7 +388,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void put_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
+    void put_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
         when(firstResponse.isSuccessful()).thenReturn(true);
         when(firstResponse.getResource()).thenReturn(resource);
         when(client.execute(reflectionGetRequest(), JSONObject.class)).thenReturn(firstResponse).thenReturn(secondResponse);
@@ -405,7 +403,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void patch_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
+    void patch_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
         when(firstResponse.isSuccessful()).thenReturn(true);
         when(firstResponse.getResource()).thenReturn(resource);
         when(client.execute(reflectionGetRequest(), JSONObject.class)).thenReturn(firstResponse).thenReturn(secondResponse);
@@ -420,7 +418,7 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void delete_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
+    void delete_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
         when(firstResponse.isSuccessful()).thenReturn(true);
         when(firstResponse.getResource()).thenReturn(resource);
         when(client.execute(reflectionGetRequest(), JSONObject.class)).thenReturn(firstResponse).thenReturn(secondResponse);
@@ -435,19 +433,20 @@ public class TraversonBuilderTest {
     }
 
     @Test
-    public void get_GivenRelToFollow_ThrowsExceptionWhenANonSuccessfulResponseIsReturnedMidwayThroughTraversing() throws Exception {
+    void get_GivenRelToFollow_ThrowsExceptionWhenANonSuccessfulResponseIsReturnedMidwayThroughTraversing() throws Exception {
         when(firstResponse.getUri()).thenReturn(URI.create("http://brokenurl.com/not_found"));
         when(firstResponse.isSuccessful()).thenReturn(false);
         when(firstResponse.getStatusCode()).thenReturn(404);
         when(client.execute(reflectionGetRequest(), JSONObject.class)).thenReturn(firstResponse);
-        exception.expect(IncompleteTraversalException.class);
-        exception.expectMessage("Received status code 404 from url http://brokenurl.com/not_found");
 
-        Response response = builder.from("http://localhost/").follow("rel").get();
+        IncompleteTraversalException exception = Assertions.assertThrows(IncompleteTraversalException.class, () -> {
+            Response response = builder.from("http://localhost/").follow("rel").get();
+            assertThat(response).isEqualTo(firstResponse);
+        });
 
+        assertThat(exception.getMessage()).isEqualTo("Received status code 404 from url http://brokenurl.com/not_found");
         Request request = reflectionGetRequest();
         verify(client, times(1)).execute(request, JSONObject.class);
-        assertThat(response).isEqualTo(firstResponse);
         assertThat(request.getUrl()).isEqualTo("http://localhost/");
         assertThat(request.getMethod()).isEqualTo(Method.GET);
         verifyNoInteractions(linkDiscoverer);
