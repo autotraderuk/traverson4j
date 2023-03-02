@@ -4,14 +4,12 @@ import com.alibaba.fastjson2.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,13 +18,6 @@ class ResponseTest {
 
     @Mock
     private Map<String, String> headers;
-
-    private static Stream<Arguments> unsuccessfulStatusCodes() {
-        return Stream.of(
-                Arguments.of(500),
-                Arguments.of(404),
-                Arguments.of(302));
-    }
 
     @Test
     void pojo() {
@@ -45,7 +36,7 @@ class ResponseTest {
     }
 
     @ParameterizedTest(name = "given{0}StatusCode_isSuccessfulReturnsFalse")
-    @MethodSource("unsuccessfulStatusCodes")
+    @ValueSource(ints = {500, 404, 302})
     void isSuccessful_GivenUnsuccessfulStatusCode_ReturnsFalse(int statusCode) {
         Response response = new Response();
         response.setStatusCode(statusCode);
