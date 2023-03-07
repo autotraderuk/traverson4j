@@ -3,139 +3,153 @@ package uk.co.autotrader.traverson.link.hal;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.google.common.io.Resources;
-import org.assertj.core.api.Condition;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.stream.Stream;
 
 import static com.google.common.io.Resources.getResource;
-import static org.assertj.core.api.Assertions.anyOf;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
 class RelByArrayIndexDiscovererTest {
 
-    private static Stream<Arguments> arrayIndexHandlers() {
-        return Stream.of(
-                Arguments.of(new LinksResolver()),
-                Arguments.of(new EmbeddedResolver())
-        );
-    }
+    private static final LinksResolver LINKS_RESOLVER = new LinksResolver();
+    private static final EmbeddedResolver EMBEDDED_RESOLVER = new EmbeddedResolver();
+    private final RelByArrayIndexDiscoverer testHandler = new RelByArrayIndexDiscoverer(LINKS_RESOLVER, EMBEDDED_RESOLVER);
 
-    private RelByArrayIndexDiscoverer testHandler;
-
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenNonMatchingSyntax_ReturnsNull(HalEntityResolver testEntityResolver) throws Exception {
-        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenNonMatchingSyntax_ReturnsNull() throws Exception {
         assertThat(this.testHandler.findHref(testJson(), "self")).isNull();
     }
 
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenNonNumber_ReturnsNull(HalEntityResolver testEntityResolver) throws Exception {
-        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenNonNumber_ReturnsNull() throws Exception {
         assertThat(this.testHandler.findHref(testJson(), "array[first]")).isNull();
     }
 
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenNegativeNumber_ReturnsNull(HalEntityResolver testEntityResolver) throws Exception {
-        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenNegativeNumber_ReturnsNull() throws Exception {
         assertThat(this.testHandler.findHref(testJson(), "array[-1]")).isNull();
     }
 
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenRelDoesntExist_throwsException(HalEntityResolver testEntityResolver) throws Exception {
-        try {
-            testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenLinksResolverAndRelDoesntExist_throwsException() {
+        RelByArrayIndexDiscoverer linksResolverHandler = new RelByArrayIndexDiscoverer(LINKS_RESOLVER);
+
+        assertThatThrownBy(() -> {
+            linksResolverHandler.findHref(testJson(), "doesnt-exist[0]");
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel 'doesnt-exist' with an item at index '0' not found in {'_links'=[array, not-array, self]}")
+                .hasMessageNotContaining("_embedded");
+    }
+
+    @Test
+    void findHref_GivenEmbeddedResolverAndRelDoesntExist_throwsException() {
+        RelByArrayIndexDiscoverer embeddedResolverHandler = new RelByArrayIndexDiscoverer(EMBEDDED_RESOLVER);
+
+        assertThatThrownBy(() -> {
+            embeddedResolverHandler.findHref(testJson(), "doesnt-exist[0]");
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel 'doesnt-exist' with an item at index '0' not found in {'_embedded'=[array, not-array]}")
+                .hasMessageNotContaining("_links");
+    }
+
+    @Test
+    void findHref_GivenBothResolversAndRelDoesntExist_throwsException() {
+        assertThatThrownBy(() -> {
             this.testHandler.findHref(testJson(), "doesnt-exist[0]");
-            fail("Should throw exception");
-        } catch (UnknownRelException e) {
-            assertThat(e)
-                    .hasMessageContaining("Rel 'doesnt-exist' with an item at index '0' not found in")
-                    .has(anyOf(
-                            messageContaining("{'_links'=[array, not-array, self]}"),
-                            messageContaining("{'_embedded'=[array, not-array]}")));
-        }
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessageContaining("Rel 'doesnt-exist' with an item at index '0' not found in")
+                .hasMessageContaining("'_embedded'=[array, not-array]")
+                .hasMessageContaining("'_links'=[array, not-array, self]");
     }
 
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenNonArrayRel_throwsException(HalEntityResolver testEntityResolver) throws Exception {
-        try {
-            testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenLinksResolverAndNonArrayRel_throwsException() {
+        RelByArrayIndexDiscoverer linksResolverHandler = new RelByArrayIndexDiscoverer(LINKS_RESOLVER);
+
+        assertThatThrownBy(() -> {
+            linksResolverHandler.findHref(testJson(), "not-array[0]");
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel 'not-array' with an item at index '0' not found in {'_links'=[array, not-array, self]}");
+    }
+
+    @Test
+    void findHref_GivenEmbeddedResolverAndNonArrayRel_throwsException() {
+        RelByArrayIndexDiscoverer embeddedResolverHandler = new RelByArrayIndexDiscoverer(EMBEDDED_RESOLVER);
+
+        assertThatThrownBy(() -> {
+            embeddedResolverHandler.findHref(testJson(), "not-array[0]");
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel 'not-array' with an item at index '0' not found in {'_embedded'=[array, not-array]}")
+                .hasMessageNotContaining("_links");
+    }
+
+    @Test
+    void findHref_GivenBothResolversAndNonArrayRel_throwsException() {
+        assertThatThrownBy(() -> {
             this.testHandler.findHref(testJson(), "not-array[0]");
-            fail("Should throw exception");
-        } catch (UnknownRelException e) {
-            assertThat(e)
-                    .hasMessageContaining("Rel 'not-array' with an item at index '0' not found in")
-                    .has(anyOf(
-                            messageContaining("{'_links'=[array, not-array, self]}"),
-                            messageContaining("{'_embedded'=[array, not-array]}")));
-        }
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessageContaining("Rel 'not-array' with an item at index '0' not found in")
+                .hasMessageContaining("'_embedded'=[array, not-array]")
+                .hasMessageContaining("'_links'=[array, not-array, self]");
     }
 
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenResourceWithNoEmbeddedAndUnknownRel_throwsException(HalEntityResolver testEntityResolver) throws Exception {
-        try {
-            JSONObject resource = JSON.parseObject(Resources.toString(getResource("hal-simple.json"), Charset.defaultCharset()));
-            testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenResourceWithNoEmbeddedAndUnknownRel_throwsException() throws Exception {
+        JSONObject resource = JSON.parseObject(Resources.toString(getResource("hal-simple.json"), Charset.defaultCharset()));
+
+        assertThatThrownBy(() -> {
             this.testHandler.findHref(resource, "not-exists[0]");
-            fail("Should throw exception");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessageContaining("Rel 'not-exists' with an item at index '0' not found in");
-            assertThat(e.getMessage()).doesNotContain("_embedded");
-        }
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessageContaining("Rel 'not-exists' with an item at index '0' not found in")
+                .hasMessageNotContaining("_embedded");
     }
 
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenArrayPosition_ReturnsHref(HalEntityResolver testEntityResolver) throws Exception {
-        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenArrayPosition_ReturnsHref() throws Exception {
         assertThat(this.testHandler.findHref(testJson(), "array[0]")).isEqualTo("http://first");
     }
 
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenSecondArrayPosition_ReturnsHref(HalEntityResolver testEntityResolver) throws Exception {
-        testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenSecondArrayPosition_ReturnsHref() throws Exception {
         assertThat(this.testHandler.findHref(testJson(), "array[1]")).isEqualTo("http://second");
     }
 
-    @ParameterizedTest
-    @MethodSource("arrayIndexHandlers")
-    void findHref_GivenNonExistentArrayPosition_throwsException(HalEntityResolver testEntityResolver) throws Exception {
-        try {
-            testHandler = new RelByArrayIndexDiscoverer(testEntityResolver);
+    @Test
+    void findHref_GivenLinksResolverAndNonExistentArrayPosition_throwsException() {
+        RelByArrayIndexDiscoverer linksResolverHandler = new RelByArrayIndexDiscoverer(LINKS_RESOLVER);
+
+        assertThatThrownBy(() -> {
+            linksResolverHandler.findHref(testJson(), "array[2]");
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel 'array' with an item at index '2' not found in {'_links'=[array, not-array, self]}")
+                .hasMessageNotContaining("_embedded");
+    }
+
+    @Test
+    void findHref_GivenEmbeddedResolverAndNonExistentArrayPosition_throwsException() {
+        RelByArrayIndexDiscoverer embeddedResolverHandler = new RelByArrayIndexDiscoverer(EMBEDDED_RESOLVER);
+
+        assertThatThrownBy(() -> {
+            embeddedResolverHandler.findHref(testJson(), "array[2]");
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel 'array' with an item at index '2' not found in {'_embedded'=[array, not-array]}")
+                .hasMessageNotContaining("_links");
+    }
+
+    @Test
+    void findHref_GivenBothResolverAndNonExistentArrayPosition_throwsException() {
+        assertThatThrownBy(() -> {
             this.testHandler.findHref(testJson(), "array[2]");
-            fail("Should throw exception");
-        } catch (UnknownRelException e) {
-            assertThat(e)
-                    .hasMessageContaining("Rel 'array' with an item at index '2' not found in")
-                    .has(anyOf(
-                            messageContaining("{'_links'=[array, not-array, self]}"),
-                            messageContaining("{'_embedded'=[array, not-array]}")));
-        }
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessageContaining("Rel 'array' with an item at index '2' not found in")
+                .hasMessageContaining("'_embedded'=[array, not-array]")
+                .hasMessageContaining("'_links'=[array, not-array, self]");
     }
 
     private JSONObject testJson() throws IOException {
         return JSON.parseObject(Resources.toString(getResource("hal-array-rels-test-data.json"), Charset.defaultCharset()));
-    }
-
-    private Condition<Throwable> messageContaining(final String expected) {
-        return new Condition<Throwable>() {
-            @Override
-            public boolean matches(Throwable thrown) {
-                return thrown.getMessage().contains(expected);
-            }
-        }.as("message contains %s", expected);
     }
 }
