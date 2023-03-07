@@ -26,9 +26,8 @@ class RelByArrayPropertyDiscovererTest {
     void findHref_GivenLinksResolverAndNonExistentRel_throwsException() {
         RelByArrayPropertyDiscoverer discoverer = new RelByArrayPropertyDiscoverer(LINKS_RESOLVER);
 
-        assertThatThrownBy(() -> {
-            discoverer.findHref(testJson(), "non-existent[key:value]");
-        }).isInstanceOf(UnknownRelException.class)
+        assertThatThrownBy(() -> discoverer.findHref(testJson(), "non-existent[key:value]"))
+                .isInstanceOf(UnknownRelException.class)
                 .hasMessageContaining("Rel 'non-existent' with an item with property 'key: value' not found in {'_links'=[duplicates, not-array, section, self]")
                 .hasMessageNotContaining("_embedded");
     }
@@ -37,9 +36,8 @@ class RelByArrayPropertyDiscovererTest {
     void findHref_GivenEmbeddedResolverAndNonExistentRel_throwsException() {
         RelByArrayPropertyDiscoverer discoverer = new RelByArrayPropertyDiscoverer(EMBEDDED_RESOLVER);
 
-        assertThatThrownBy(() -> {
-            discoverer.findHref(testJson(), "non-existent[key:value]");
-        }).isInstanceOf(UnknownRelException.class)
+        assertThatThrownBy(() -> discoverer.findHref(testJson(), "non-existent[key:value]"))
+                .isInstanceOf(UnknownRelException.class)
                 .hasMessageContaining("Rel 'non-existent' with an item with property 'key: value' not found in {'_embedded'=[duplicates, not-array, section]")
                 .hasMessageNotContaining("_links");
     }
@@ -53,9 +51,8 @@ class RelByArrayPropertyDiscovererTest {
     void findHref_GivenLinksResolverAndRelWithPropertyNotExisting_throwsException() {
         RelByArrayPropertyDiscoverer discoverer = new RelByArrayPropertyDiscoverer(LINKS_RESOLVER);
 
-        assertThatThrownBy(() -> {
-            discoverer.findHref(testJson(), "section[name:notexist]");
-        }).isInstanceOf(UnknownRelException.class)
+        assertThatThrownBy(() -> discoverer.findHref(testJson(), "section[name:notexist]"))
+                .isInstanceOf(UnknownRelException.class)
                 .hasMessageContaining("Rel 'section' with an item with property 'name: notexist' not found in {'_links'=[duplicates, not-array, section, self]")
                 .hasMessageNotContaining("_embedded");
     }
@@ -64,18 +61,16 @@ class RelByArrayPropertyDiscovererTest {
     void findHref_GivenEmbeddedResolverAndRelWithPropertyNotExisting_throwsException() {
         RelByArrayPropertyDiscoverer discoverer = new RelByArrayPropertyDiscoverer(EMBEDDED_RESOLVER);
 
-        assertThatThrownBy(() -> {
-            discoverer.findHref(testJson(), "section[name:notexist]");
-        }).isInstanceOf(UnknownRelException.class)
+        assertThatThrownBy(() -> discoverer.findHref(testJson(), "section[name:notexist]"))
+                .isInstanceOf(UnknownRelException.class)
                 .hasMessageContaining("Rel 'section' with an item with property 'name: notexist' not found in {'_embedded'=[duplicates, not-array, section]")
                 .hasMessageNotContaining("_links");
     }
 
     @Test
     void findHref_GivenBothResolversAndRelWithPropertyNotExisting_throwsException() {
-        assertThatThrownBy(() -> {
-            this.testSubject.findHref(testJson(), "section[name:notexist]");
-        }).isInstanceOf(UnknownRelException.class)
+        assertThatThrownBy(() -> this.testSubject.findHref(testJson(), "section[name:notexist]"))
+                .isInstanceOf(UnknownRelException.class)
                 .hasMessageContaining("Rel 'section' with an item with property 'name: notexist' not found in")
                 .hasMessageContaining("'_embedded'=[duplicates, not-array, section]")
                 .hasMessageContaining("'_links'=[duplicates, not-array, section, self]");
@@ -85,9 +80,8 @@ class RelByArrayPropertyDiscovererTest {
     void findHref_GivenLinksResolverAndRelThatIsntArray_throwsException() {
         RelByArrayPropertyDiscoverer discoverer = new RelByArrayPropertyDiscoverer(LINKS_RESOLVER);
 
-        assertThatThrownBy(() -> {
-            discoverer.findHref(testJson(), "self[prop:value]");
-        }).isInstanceOf(UnknownRelException.class)
+        assertThatThrownBy(() -> discoverer.findHref(testJson(), "self[prop:value]"))
+                .isInstanceOf(UnknownRelException.class)
                 .hasMessageContaining("Rel 'self' with an item with property 'prop: value' not found in {'_links'=[duplicates, not-array, section, self]")
                 .hasMessageNotContaining("_embedded");
     }
@@ -96,18 +90,16 @@ class RelByArrayPropertyDiscovererTest {
     void findHref_GivenEmbeddedResolverAndRelThatIsntArray_throwsException() {
         RelByArrayPropertyDiscoverer discoverer = new RelByArrayPropertyDiscoverer(EMBEDDED_RESOLVER);
 
-        assertThatThrownBy(() -> {
-            discoverer.findHref(testJson(), "self[prop:value]");
-        }).isInstanceOf(UnknownRelException.class)
+        assertThatThrownBy(() -> discoverer.findHref(testJson(), "self[prop:value]"))
+                .isInstanceOf(UnknownRelException.class)
                 .hasMessageContaining("Rel 'self' with an item with property 'prop: value' not found in {'_embedded'=[duplicates, not-array, section]")
                 .hasMessageNotContaining("_links");
     }
 
     @Test
     void findHref_GivenBothResolversAndRelThatIsntArray_throwsException() {
-        assertThatThrownBy(() -> {
-            this.testSubject.findHref(testJson(), "self[prop:value]");
-        }).isInstanceOf(UnknownRelException.class)
+        assertThatThrownBy(() -> this.testSubject.findHref(testJson(), "self[prop:value]"))
+                .isInstanceOf(UnknownRelException.class)
                 .hasMessageContaining("Rel 'self' with an item with property 'prop: value' not found in")
                 .hasMessageContaining("'_embedded'=[duplicates, not-array, section]")
                 .hasMessageContaining("'_links'=[duplicates, not-array, section, self]");

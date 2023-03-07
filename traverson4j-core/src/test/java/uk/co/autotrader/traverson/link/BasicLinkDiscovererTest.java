@@ -12,7 +12,7 @@ import uk.co.autotrader.traverson.exception.UnknownRelException;
 import java.nio.charset.Charset;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class BasicLinkDiscovererTest {
@@ -38,11 +38,8 @@ class BasicLinkDiscovererTest {
         String fileContents = Resources.toString(Resources.getResource("basic-hypermedia-simple.json"), Charset.defaultCharset());
         JSONObject json = JSON.parseObject(fileContents);
 
-        try {
-            linkDiscoverer.findHref(json, "NotExistingRel");
-            fail("Test should throw exception for missing link");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessage("Rel NotExistingRel not found");
-        }
+        assertThatThrownBy(() -> linkDiscoverer.findHref(json, "NotExistingRel"))
+                .isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel NotExistingRel not found");
     }
 }

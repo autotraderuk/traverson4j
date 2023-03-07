@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import static com.google.common.io.Resources.getResource;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -91,17 +91,15 @@ class TraversonBuilderFollowsTest {
 
     @Test
     void follows_GivenRelByPropertyThatIsNotAnArray_throwsException() {
-        try {
+        assertThatThrownBy(() -> {
             this.testSubject.jsonHal()
                     .from("hal-traverson-builder-data.json")
                     .follow("makes[invalid:property]")
                     .get();
-            fail("Test should throw an exception for an unknown rel");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessageContaining("Rel 'makes' with an item with property 'invalid: property' not found in {")
-                    .hasMessageContaining("'_links'=[makes, self, vegetables]")
-                    .hasMessageContaining("'_embedded'=[ships, vegetables]");
-        }
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessageContaining("Rel 'makes' with an item with property 'invalid: property' not found in {")
+                .hasMessageContaining("'_links'=[makes, self, vegetables]")
+                .hasMessageContaining("'_embedded'=[ships, vegetables]");
     }
 
     @Test
@@ -117,17 +115,15 @@ class TraversonBuilderFollowsTest {
 
     @Test
     void follows_GivenRelByArrayThatIsNotAnArray_throwsException() {
-        try {
+        assertThatThrownBy(() -> {
             this.testSubject.jsonHal()
                     .from("hal-traverson-builder-data.json")
                     .follow("makes[0]")
                     .get();
-            fail("Test should throw an exception for an unknown rel");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessageContaining("Rel 'makes' with an item at index '0' not found in {")
-                    .hasMessageContaining("'_links'=[makes, self, vegetables]")
-                    .hasMessageContaining("'_embedded'=[ships, vegetables]");
-        }
+        }).isInstanceOf(UnknownRelException.class)
+                .hasMessageContaining("Rel 'makes' with an item at index '0' not found in {")
+                .hasMessageContaining("'_links'=[makes, self, vegetables]")
+                .hasMessageContaining("'_embedded'=[ships, vegetables]");
     }
 
     @Test
