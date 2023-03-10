@@ -1,31 +1,31 @@
 package uk.co.autotrader.traverson.link.hal;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.io.Resources;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 
 import java.nio.charset.Charset;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@RunWith(MockitoJUnitRunner.class)
-public class LinksRelHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class LinksRelHandlerTest {
 
     private LinksRelHandler handler;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         this.handler = new LinksRelHandler();
     }
 
     @Test
-    public void findHref_GivenJsonContainsExpectedRel_ReturnsHref() throws Exception {
+    void findHref_GivenJsonContainsExpectedRel_ReturnsHref() throws Exception {
         String fileContents = Resources.toString(Resources.getResource("hal-simple.json"), Charset.defaultCharset());
         JSONObject json = JSON.parseObject(fileContents);
 
@@ -35,15 +35,12 @@ public class LinksRelHandlerTest {
     }
 
     @Test
-    public void findHref_GivenJsonDoesNotContainExpectedRel_ThrowsException() throws Exception {
+    void findHref_GivenJsonDoesNotContainExpectedRel_ThrowsException() throws Exception {
         String fileContents = Resources.toString(Resources.getResource("hal-simple.json"), Charset.defaultCharset());
         JSONObject json = JSON.parseObject(fileContents);
 
-        try {
-            this.handler.findHref(json, "doesNotExist");
-            fail("Test should throw exception for missing link");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessage("Rel doesNotExist not in the following [domains, self]");
-        }
+        assertThatThrownBy(() -> this.handler.findHref(json, "doesNotExist"))
+                .isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel doesNotExist not in the following [domains, self]");
     }
 }

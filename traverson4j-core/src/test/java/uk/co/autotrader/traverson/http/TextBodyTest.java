@@ -1,17 +1,17 @@
 package uk.co.autotrader.traverson.http;
 
 import com.google.common.base.Charsets;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TextBodyTest {
+@ExtendWith(MockitoExtension.class)
+class TextBodyTest {
 
     @Test
-    public void init_GivenValues_SetsProperties() throws Exception {
+    void init_GivenValues_SetsProperties() {
         TextBody body = new TextBody("data", "contentType", Charsets.UTF_8);
 
         assertThat(body.getContent()).isEqualTo("data");
@@ -20,7 +20,7 @@ public class TextBodyTest {
     }
 
     @Test
-    public void legacyinit_GivenValues_SetsProperties() throws Exception {
+    void legacyinit_GivenValues_SetsProperties() {
         TextBody body = new TextBody("data", "contentType");
 
         assertThat(body.getContent()).isEqualTo("data");

@@ -1,30 +1,30 @@
 package uk.co.autotrader.traverson.link;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.io.Resources;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 
 import java.nio.charset.Charset;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@RunWith(MockitoJUnitRunner.class)
-public class BasicLinkDiscovererTest {
+@ExtendWith(MockitoExtension.class)
+class BasicLinkDiscovererTest {
     private LinkDiscoverer linkDiscoverer;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         linkDiscoverer = new BasicLinkDiscoverer();
     }
 
     @Test
-    public void findHref_GivenBasicHypermediaResource_ReturnsHref() throws Exception {
+    void findHref_GivenBasicHypermediaResource_ReturnsHref() throws Exception {
         String fileContents = Resources.toString(Resources.getResource("basic-hypermedia-simple.json"), Charset.defaultCharset());
         JSONObject json = JSON.parseObject(fileContents);
 
@@ -34,15 +34,12 @@ public class BasicLinkDiscovererTest {
     }
 
     @Test
-    public void findHref_GivenBasicHypermediaResourceAndRelNotExisting_ThrowsException() throws Exception {
+    void findHref_GivenBasicHypermediaResourceAndRelNotExisting_ThrowsException() throws Exception {
         String fileContents = Resources.toString(Resources.getResource("basic-hypermedia-simple.json"), Charset.defaultCharset());
         JSONObject json = JSON.parseObject(fileContents);
 
-        try {
-            linkDiscoverer.findHref(json, "NotExistingRel");
-            fail("Test should throw exception for missing link");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessage("Rel NotExistingRel not found");
-        }
+        assertThatThrownBy(() -> linkDiscoverer.findHref(json, "NotExistingRel"))
+                .isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel NotExistingRel not found");
     }
 }

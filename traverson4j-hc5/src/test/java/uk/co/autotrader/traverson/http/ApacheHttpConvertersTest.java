@@ -6,12 +6,12 @@ import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.message.BasicHeader;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.conversion.ResourceConversionService;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
@@ -23,8 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ApacheHttpConvertersTest {
+@ExtendWith(MockitoExtension.class)
+class ApacheHttpConvertersTest {
     private ApacheHttpConverters apacheHttpUriConverter;
     @Mock
     private BodyFactory bodyFactory;
@@ -39,13 +39,13 @@ public class ApacheHttpConvertersTest {
     @Mock
     private AuthCredential authCredential;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         apacheHttpUriConverter = new ApacheHttpConverters(bodyFactory, uriUtils, conversionService);
     }
 
     @Test
-    public void toRequest_SetsHttpVerb() {
+    void toRequest_SetsHttpVerb() {
         Request request = new Request();
         request.setMethod(Method.PATCH);
 
@@ -55,7 +55,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void toRequest_SetsUrl() throws Exception {
+    void toRequest_SetsUrl() throws Exception {
         Request request = new Request();
         request.setMethod(Method.GET);
         String url = "http://localhost:8080/";
@@ -68,7 +68,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void toRequest_AppendsQueryParams() throws Exception {
+    void toRequest_AppendsQueryParams() throws Exception {
         Request request = new Request();
         request.setMethod(Method.GET);
         String url = "http://localhost:8080";
@@ -83,7 +83,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void toRequest_ExpandsTemplateUriBeforeBuildingRequest() throws Exception {
+    void toRequest_ExpandsTemplateUriBeforeBuildingRequest() throws Exception {
         Request request = new Request();
         request.setMethod(Method.GET);
         String url = "http://localhost:8080/{tmp1}/stuff{?tmp2}";
@@ -99,7 +99,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void toRequest_SetsHeaders() {
+    void toRequest_SetsHeaders() {
         Request request = new Request();
         request.setMethod(Method.GET);
         request.addHeader("header1", "value1");
@@ -112,7 +112,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void toRequest_SetsAcceptHeader() {
+    void toRequest_SetsAcceptHeader() {
         Request request = new Request();
         request.setMethod(Method.GET);
         request.setAcceptMimeType("application/json");
@@ -123,7 +123,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void toRequest_SetsHttpEntity() {
+    void toRequest_SetsHttpEntity() {
         Body<?> body = mock(Body.class);
         Request request = new Request();
         request.setMethod(Method.PUT);
@@ -136,7 +136,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void toResponse_BuildsResponseCorrectly() throws Exception {
+    void toResponse_BuildsResponseCorrectly() throws Exception {
         HttpRequest request =  mock(HttpRequest.class);
         URI requestUri = new URI("http://localhost");
 
@@ -155,7 +155,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void toResponse_GivenResponseHasEntity_ConvertsAndSetsResource() throws Exception {
+    void toResponse_GivenResponseHasEntity_ConvertsAndSetsResource() throws Exception {
         HttpRequest request =  mock(HttpRequest.class);
         URI requestUri = new URI("http://localhost");
         String expectedJson = "{'name':'test'}";
@@ -174,7 +174,7 @@ public class ApacheHttpConvertersTest {
     }
 
     @Test
-    public void constructCredentialsProviderAndAuthCache_ifNoHostnameReturnsAnyAuthScope() {
+    void constructCredentialsProviderAndAuthCache_ifNoHostnameReturnsAnyAuthScope() {
         BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
         ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
         AuthCache authCache = new BasicAuthCache();
@@ -184,12 +184,12 @@ public class ApacheHttpConvertersTest {
 
         apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
 
-        assertThat(basicCredentialsProvider.toString()).isEqualTo("[<any auth scheme> <any realm> <any protocol>://<any host>:<any port>]");
+        assertThat(basicCredentialsProvider).hasToString("[<any auth scheme> <any realm> <any protocol>://<any host>:<any port>]");
         assertThat(authCache.get(new HttpHost("hostname"))).isNull();
     }
 
     @Test
-    public void constructCredentialsProviderAndAuthCache_setsHostnameInAuthScope() {
+    void constructCredentialsProviderAndAuthCache_setsHostnameInAuthScope() {
         BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
         ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
         AuthCache authCache = new BasicAuthCache();
@@ -200,12 +200,12 @@ public class ApacheHttpConvertersTest {
 
         apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
 
-        assertThat(basicCredentialsProvider.toString()).isEqualTo("[<any auth scheme> <any realm> http://hostname:<any port>]");
+        assertThat(basicCredentialsProvider).hasToString("[<any auth scheme> <any realm> http://hostname:<any port>]");
         assertThat(authCache.get(new HttpHost("hostname"))).isNull();
     }
 
     @Test
-    public void constructCredentialsProviderAndAuthCache_setsHostnameAndBasicAuth() {
+    void constructCredentialsProviderAndAuthCache_setsHostnameAndBasicAuth() {
         BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
         AuthCache authCache = new BasicAuthCache();
         ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
@@ -217,12 +217,12 @@ public class ApacheHttpConvertersTest {
 
         apacheHttpTraversonClientAdapter.apacheHttpUriConverter.constructCredentialsProviderAndAuthCache(basicCredentialsProvider, authCache, authCredential);
 
-        assertThat(basicCredentialsProvider.toString()).isEqualTo("[<any auth scheme> <any realm> http://hostname:<any port>]");
+        assertThat(basicCredentialsProvider).hasToString("[<any auth scheme> <any realm> http://hostname:<any port>]");
         assertThat(authCache.get(new HttpHost("hostname")).getName()).isEqualTo("Basic");
     }
 
     @Test
-    public void constructCredentialsProviderAndAuthCache_throwsExceptionWhenHostnameContainsSpaces() {
+    void constructCredentialsProviderAndAuthCache_throwsExceptionWhenHostnameContainsSpaces() {
         BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
         ApacheHttpTraversonClientAdapter apacheHttpTraversonClientAdapter = new ApacheHttpTraversonClientAdapter();
         AuthCache authCache = new BasicAuthCache();

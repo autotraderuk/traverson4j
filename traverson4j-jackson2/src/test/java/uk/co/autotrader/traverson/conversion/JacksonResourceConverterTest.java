@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.io.ByteArrayInputStream;
@@ -23,25 +23,25 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class JacksonResourceConverterTest {
+@ExtendWith(MockitoExtension.class)
+class JacksonResourceConverterTest {
 
     private JacksonResourceConverter converter;
     @Mock
     private ObjectMapper objectMapper;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         converter = new JacksonResourceConverter();
     }
 
     @Test
-    public void canConvert_ReturnsTrue() {
+    void canConvert_ReturnsTrue() {
         assertThat(converter.getDestinationType()).isEqualTo(Object.class);
     }
 
     @Test
-    public void convert_GivenJsonStringAndValidStructuredPojo_ReturnsMappedPojo() throws Exception {
+    void convert_GivenJsonStringAndValidStructuredPojo_ReturnsMappedPojo() throws Exception {
         String resourceAsString = Resources.toString(Resources.getResource("hal-embedded.json"), Charset.defaultCharset());
         InputStream resource = Mockito.spy(new ByteArrayInputStream(resourceAsString.getBytes(StandardCharsets.UTF_8)));
 
@@ -59,7 +59,7 @@ public class JacksonResourceConverterTest {
     }
 
     @Test
-    public void convert_GivenTheObjectMapperThrowsJacksonException_WrapsInConversionException() throws Exception {
+    void convert_GivenTheObjectMapperThrowsJacksonException_WrapsInConversionException() throws Exception {
         final String resourceAsString = "{}";
         JsonProcessingException jsonProcessingException = Mockito.mock(JsonProcessingException.class);
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(jsonProcessingException);
@@ -77,7 +77,7 @@ public class JacksonResourceConverterTest {
     }
 
     @Test
-    public void convert_GivenTheObjectMapperThrowsARuntimeException_WrapsInConversionException() throws Exception {
+    void convert_GivenTheObjectMapperThrowsARuntimeException_WrapsInConversionException() throws Exception {
         final String resourceAsString = "{}";
         RuntimeException runtimeException = new RuntimeException("Error happened");
         when(objectMapper.readValue(resourceAsString, Domains.class)).thenThrow(runtimeException);

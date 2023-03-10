@@ -1,13 +1,13 @@
 package uk.co.autotrader.traverson.link;
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.io.Resources;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 import uk.co.autotrader.traverson.link.hal.HalLinkDiscoverer;
 
@@ -15,20 +15,19 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import static com.google.common.io.Resources.getResource;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class HalLinkDiscovererTest {
+@ExtendWith(MockitoExtension.class)
+class HalLinkDiscovererTest {
     private LinkDiscoverer linkDiscoverer;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         this.linkDiscoverer = new HalLinkDiscoverer();
     }
 
     @Test
-    public void findHref_GivenHalResource_ReturnsSelfHref() throws Exception {
+    void findHref_GivenHalResource_ReturnsSelfHref() throws Exception {
         JSONObject json = getJsonResource("hal-simple.json");
 
         String url = this.linkDiscoverer.findHref(json, "self");
@@ -37,20 +36,16 @@ public class HalLinkDiscovererTest {
     }
 
     @Test
-    public void findHref_GivenRelDoesntExist_ThrowsUnknownRelException() throws Exception {
+    void findHref_GivenRelDoesntExist_ThrowsUnknownRelException() throws Exception {
         JSONObject json = getJsonResource("hal-simple.json");
 
-        try {
-            this.linkDiscoverer.findHref(json, "doesNotExist");
-            fail("Test should throw exception for missing link");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessage("Rel doesNotExist not in the following [domains, self]");
-        }
-
+        assertThatThrownBy(() -> this.linkDiscoverer.findHref(json, "doesNotExist"))
+                .isInstanceOf(UnknownRelException.class)
+                .hasMessage("Rel doesNotExist not in the following [domains, self]");
     }
 
     @Test
-    public void findHref_GivenHalResourceAndDomainsRel_ReturnsDomainsHref() throws Exception {
+    void findHref_GivenHalResourceAndDomainsRel_ReturnsDomainsHref() throws Exception {
         JSONObject json = getJsonResource("hal-simple.json");
 
         String url = this.linkDiscoverer.findHref(json, "domains");
@@ -59,7 +54,7 @@ public class HalLinkDiscovererTest {
     }
 
     @Test
-    public void findHref_GivenHalResourceWithEmbedded_ReturnsSelfHrefForFirstItemMatchedByName() throws Exception {
+    void findHref_GivenHalResourceWithEmbedded_ReturnsSelfHrefForFirstItemMatchedByName() throws Exception {
         JSONObject json = getJsonResource("hal-embedded.json");
 
         String url = this.linkDiscoverer.findHref(json, "AutoTrader");
@@ -68,7 +63,7 @@ public class HalLinkDiscovererTest {
     }
 
     @Test
-    public void findHref_GivenHalResourceWithEmbeddedAndRelDoesNotMatchNamedItem_ReturnsSelfHrefFromRootLinks() throws Exception {
+    void findHref_GivenHalResourceWithEmbeddedAndRelDoesNotMatchNamedItem_ReturnsSelfHrefFromRootLinks() throws Exception {
         JSONObject json = getJsonResource("hal-embedded.json");
 
         String url = this.linkDiscoverer.findHref(json, "self");
@@ -77,7 +72,7 @@ public class HalLinkDiscovererTest {
     }
 
     @Test
-    public void findHref_GivenHalResourceWithEmptyEmbedded_ReturnsSelfHrefFromRootLinks() throws Exception {
+    void findHref_GivenHalResourceWithEmptyEmbedded_ReturnsSelfHrefFromRootLinks() throws Exception {
         JSONObject json = getJsonResource("hal-empty-embedded.json");
 
         String url = this.linkDiscoverer.findHref(json, "self");
@@ -86,7 +81,7 @@ public class HalLinkDiscovererTest {
     }
 
     @Test
-    public void findHref_GivenHalResourceWithLinkArray_ReturnsMatchingHrefFromArray() throws Exception {
+    void findHref_GivenHalResourceWithLinkArray_ReturnsMatchingHrefFromArray() throws Exception {
         JSONObject json = getJsonResource("hal-keyed-link-rels.json");
 
         String url = this.linkDiscoverer.findHref(json, "section[name:turnip]");
@@ -95,21 +90,18 @@ public class HalLinkDiscovererTest {
     }
 
     @Test
-    public void findHref_GivenPropertyBasedRelDoesntExist_throwsException() throws Exception {
+    void findHref_GivenPropertyBasedRelDoesntExist_throwsException() throws Exception {
         JSONObject json = getJsonResource("hal-traverson-builder-data.json");
 
-        try {
-            this.linkDiscoverer.findHref(json, "non-existent[key:value]");
-            fail("Should throw exception when rel not found");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessageContaining("Rel 'non-existent' with an item with property 'key: value' not found in {")
-                    .hasMessageContaining("'_links'=[makes, self, vegetables]")
-                    .hasMessageContaining("'_embedded'=[ships, vegetables]");
-        }
+        assertThatThrownBy(() -> this.linkDiscoverer.findHref(json, "non-existent[key:value]"))
+                .isInstanceOf(UnknownRelException.class)
+                .hasMessageContaining("Rel 'non-existent' with an item with property 'key: value' not found in {")
+                .hasMessageContaining("'_links'=[makes, self, vegetables]")
+                .hasMessageContaining("'_embedded'=[ships, vegetables]");
     }
 
     @Test
-    public void findHref_GivenHalResourceWithLinkArrayIndex_ReturnsMatchingHrefFromArray() throws Exception {
+    void findHref_GivenHalResourceWithLinkArrayIndex_ReturnsMatchingHrefFromArray() throws Exception {
         JSONObject json = getJsonResource("hal-keyed-link-rels.json");
 
         String url = this.linkDiscoverer.findHref(json, "section[1]");
@@ -118,17 +110,14 @@ public class HalLinkDiscovererTest {
     }
 
     @Test
-    public void findHref_GivenNonExistentArrayIndex_throwsException() throws Exception {
+    void findHref_GivenNonExistentArrayIndex_throwsException() throws Exception {
         JSONObject json = getJsonResource("hal-traverson-builder-data.json");
 
-        try {
-            this.linkDiscoverer.findHref(json, "non-existent[0]");
-            fail("Should throw exception when rel not found");
-        } catch (UnknownRelException e) {
-            assertThat(e).hasMessageContaining("Rel 'non-existent' with an item at index '0' not found in {")
-                    .hasMessageContaining("'_links'=[makes, self, vegetables]")
-                    .hasMessageContaining("'_embedded'=[ships, vegetables]");
-        }
+        assertThatThrownBy(() -> this.linkDiscoverer.findHref(json, "non-existent[0]"))
+                .isInstanceOf(UnknownRelException.class)
+                .hasMessageContaining("Rel 'non-existent' with an item at index '0' not found in {")
+                .hasMessageContaining("'_links'=[makes, self, vegetables]")
+                .hasMessageContaining("'_embedded'=[ships, vegetables]");
     }
 
     private JSONObject getJsonResource(String resourceName) throws IOException {

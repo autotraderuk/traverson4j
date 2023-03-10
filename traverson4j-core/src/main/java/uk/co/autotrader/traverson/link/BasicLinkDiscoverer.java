@@ -1,6 +1,6 @@
 package uk.co.autotrader.traverson.link;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import uk.co.autotrader.traverson.exception.UnknownRelException;
 
 public class BasicLinkDiscoverer implements LinkDiscoverer {

@@ -1,13 +1,11 @@
 package uk.co.autotrader.traverson.conversion;
 
-import com.alibaba.fastjson.JSONObject;
-import org.hamcrest.CoreMatchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import com.alibaba.fastjson2.JSONObject;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.exception.ConversionException;
 
 import java.io.ByteArrayInputStream;
@@ -19,12 +17,10 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ResourceConversionServiceTest {
+@ExtendWith(MockitoExtension.class)
+class ResourceConversionServiceTest {
 
     private final ResourceConversionService service = ResourceConversionService.getInstance();
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     @Mock
     private ResourceConverter<Number> converter;
     @Mock
@@ -33,7 +29,7 @@ public class ResourceConversionServiceTest {
     private InputStream inputStream;
 
     @Test
-    public void init_EnsuresThatTheDefaultConvertersAreRegistered() {
+    void init_EnsuresThatTheDefaultConvertersAreRegistered() {
         Map<Class<?>, ResourceConverter<?>> converters = service.getConvertersByClass();
 
         assertThat(converters).isNotEmpty();
@@ -41,16 +37,17 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenUnsupportedResponseType_ThrowsException() {
-        expectedException.expect(ConversionException.class);
-        expectedException.expectCause(CoreMatchers.nullValue(Throwable.class));
-        expectedException.expectMessage("Unsupported return type of uk.co.autotrader.traverson.conversion.UnsupportedType");
+    void convert_GivenUnsupportedResponseType_ThrowsException() {
+        ConversionException exception = Assertions.assertThrows(ConversionException.class, () -> {
+            service.convert(inputStream, UnsupportedType.class);
+        });
 
-        service.convert(inputStream, UnsupportedType.class);
+        assertThat(exception.getCause()).isNull();
+        assertThat(exception.getMessage()).isEqualTo("Unsupported return type of uk.co.autotrader.traverson.conversion.UnsupportedType");
     }
 
     @Test
-    public void addConverter_RegistersTheConverterForUseLater() {
+    void addConverter_RegistersTheConverterForUseLater() {
 
         SupportedType result = service.convert(inputStream, SupportedType.class);
 
@@ -59,8 +56,8 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenRequestForFastJSON_EnsuresTheFastJsonConverterIsLoaded() {
-        String resourceAsString = "{'name':'test'}";
+    void convert_GivenRequestForFastJSON_EnsuresTheFastJsonConverterIsLoaded() {
+        String resourceAsString = "{\"name\":\"test\"}";
 
         JSONObject resource = service.convert(toInputStream(resourceAsString), JSONObject.class);
 
@@ -69,7 +66,7 @@ public class ResourceConversionServiceTest {
 
 
     @Test
-    public void convert_GivenRequestForString_EnsuresTheStringConverterIsLoaded() {
+    void convert_GivenRequestForString_EnsuresTheStringConverterIsLoaded() {
         String resourceAsString = "{'name':'test'}";
         String resource = service.convert(toInputStream(resourceAsString), String.class);
 
@@ -77,7 +74,7 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenRequestForByteArray_EnsuresTheStringConverterIsLoaded() {
+    void convert_GivenRequestForByteArray_EnsuresTheStringConverterIsLoaded() {
         byte[] bytes = new byte[] {0, 1, 2, 3};
         ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 
@@ -87,7 +84,7 @@ public class ResourceConversionServiceTest {
     }
 
     @Test
-    public void convert_GivenTheConvertersAreLoadedInAnyOrder_TheConversionServiceWillTraverseTheClassHierarchyUntilAMatch() {
+    void convert_GivenTheConvertersAreLoadedInAnyOrder_TheConversionServiceWillTraverseTheClassHierarchyUntilAMatch() {
         String resourceAsString = "1234";
         InputStream resourceStream = toInputStream(resourceAsString);
         when(failingConverter.getDestinationType()).thenReturn(Object.class);

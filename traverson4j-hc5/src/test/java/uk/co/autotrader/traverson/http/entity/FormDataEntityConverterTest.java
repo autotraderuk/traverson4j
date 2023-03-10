@@ -3,28 +3,28 @@ package uk.co.autotrader.traverson.http.entity;
 import com.google.common.base.Charsets;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.core5.http.HttpEntity;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.co.autotrader.traverson.http.FormDataBody;
 
 import java.io.ByteArrayInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class FormDataEntityConverterTest {
+@ExtendWith(MockitoExtension.class)
+class FormDataEntityConverterTest {
 
     private FormDataEntityConverter converter;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         converter = new FormDataEntityConverter();
     }
 
     @Test
-    public void toEntity_GivenTextBody_ReturnsStringEntity() throws Exception {
+    void toEntity_GivenTextBody_ReturnsStringEntity() throws Exception {
 
         HttpEntity entity = converter.toEntity(new FormDataBody(Charsets.UTF_8, new FormDataBody.NameValuePair("name", "value")));
 

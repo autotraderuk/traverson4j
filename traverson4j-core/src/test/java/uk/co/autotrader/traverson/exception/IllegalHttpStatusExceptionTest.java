@@ -1,16 +1,16 @@
 package uk.co.autotrader.traverson.exception;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class IllegalHttpStatusExceptionTest {
+class IllegalHttpStatusExceptionTest {
 
     @Test
-    public void init_SetsStatusAndUriFields() throws Exception {
+    void init_SetsStatusAndUriFields() {
         URI uri = URI.create("http://localhost");
 
         IllegalHttpStatusException exception = new IllegalHttpStatusException(404, uri);

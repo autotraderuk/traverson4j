@@ -1,10 +1,9 @@
 package uk.co.autotrader.traverson.http;
 
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,18 +12,18 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TemplateUriUtilsTest {
+@ExtendWith(MockitoExtension.class)
+class TemplateUriUtilsTest {
 
     private TemplateUriUtils templateUriUtils;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         templateUriUtils = new TemplateUriUtils();
     }
 
     @Test
-    public void expandTemplateUri_GivenTemplateUriAndTemplateParams_ExpandsTemplate() throws Exception {
+    void expandTemplateUri_GivenTemplateUriAndTemplateParams_ExpandsTemplate() {
         String input = "http://example.autotrader.co.uk/dealers{?dealerId*,otherParam}";
         Map<String, List<String>> templateParams = new HashMap<String, List<String>>();
         templateParams.put("dealerId", Arrays.asList("123"));
@@ -36,7 +35,7 @@ public class TemplateUriUtilsTest {
     }
 
     @Test
-    public void expandTemplateUri_GivenTemplateUriAndUnusedTemplateParams_ExpandsTemplate() throws Exception {
+    void expandTemplateUri_GivenTemplateUriAndUnusedTemplateParams_ExpandsTemplate() {
         String input = "http://example.autotrader.co.uk/dealers{?dealerId,otherParam}";
         Map<String, List<String>> templateParams = new HashMap<String, List<String>>();
         templateParams.put("notFound", Arrays.asList("dummy"));
@@ -47,7 +46,7 @@ public class TemplateUriUtilsTest {
     }
 
     @Test
-    public void expandTemplateUri_GivenTemplateUriAndNoTemplateParams_ExpandsTemplate() throws Exception {
+    void expandTemplateUri_GivenTemplateUriAndNoTemplateParams_ExpandsTemplate() {
         String input = "http://example.autotrader.co.uk/dealers{?dealerId,otherParam}";
         Map<String, List<String>> templateParams = new HashMap<String, List<String>>();
 
@@ -58,7 +57,7 @@ public class TemplateUriUtilsTest {
 
 
     @Test
-    public void expandTemplateUri_GivenTemplateUriAndMultipleOfTheSameTemplateParam_ExpandsTemplate() throws Exception {
+    void expandTemplateUri_GivenTemplateUriAndMultipleOfTheSameTemplateParam_ExpandsTemplate() {
         String input = "http://example.autotrader.co.uk/dealers{?dealerId*,otherParam}";
         Map<String, List<String>> templateParams = new HashMap<String, List<String>>();
         templateParams.put("dealerId", Arrays.asList("1234", "4567", "78910"));

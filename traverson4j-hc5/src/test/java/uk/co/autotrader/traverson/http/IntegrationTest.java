@@ -1,12 +1,12 @@
 package uk.co.autotrader.traverson.http;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.co.autotrader.traverson.Traverson;
 
 import java.io.IOException;
@@ -22,25 +22,25 @@ public class IntegrationTest {
 
     private final Traverson traverson = new Traverson(new ApacheHttpTraversonClientAdapter());
 
-    @BeforeClass
-    public static void beforeClass() throws Exception {
+    @BeforeAll
+    public static void beforeClass() {
         wireMockServer = new WireMockServer(8089);
         wireMockServer.start();
     }
 
-    @AfterClass
-    public static void afterClass() throws Exception {
+    @AfterAll
+    public static void afterClass() {
         wireMockServer.stop();
         wireMockServer.resetAll();
     }
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         wireMockServer.resetAll();
     }
 
     @Test
-    public void inputStream_allowsClientsToRequestTheBodyAsInputStreamWithoutClosingTheHttpConnection() throws IOException {
+    void inputStream_allowsClientsToRequestTheBodyAsInputStreamWithoutClosingTheHttpConnection() throws IOException {
         String htmlBody = "<html></html>";
         wireMockServer.stubFor(get(urlEqualTo("/"))
                 .willReturn(WireMock.status(200).withBody(htmlBody)));
@@ -55,7 +55,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void acceptHeaderCanBeSet() throws IOException {
+    void acceptHeaderCanBeSet() throws IOException {
         String htmlBody = "<html></html>";
         wireMockServer.stubFor(get(urlEqualTo("/")).willReturn(WireMock.status(200).withBody(htmlBody)));
 
@@ -66,7 +66,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void requestBody_SimpleTextBodyIsSerializedAndPostedCorrectly() {
+    void requestBody_SimpleTextBodyIsSerializedAndPostedCorrectly() {
         wireMockServer.stubFor(patch(urlEqualTo("/records/1"))
                 .willReturn(WireMock.status(202)));
         Response<JSONObject> response = traverson.from("http://localhost:8089/records/1")
@@ -77,7 +77,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void requestBody_MultipartBodyIsSerializedAndPostedCorrectly() {
+    void requestBody_MultipartBodyIsSerializedAndPostedCorrectly() {
         byte[] data = new byte[]{0x00, 0x01, 0x02};
         wireMockServer.stubFor(post("/records")
                 .withMultipartRequestBody(aMultipart()
@@ -96,7 +96,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void basicAuthentication_ReactsToUnauthorizedStatusAndAuthenticateHeader() {
+    void basicAuthentication_ReactsToUnauthorizedStatusAndAuthenticateHeader() {
         wireMockServer.stubFor(get("/restricted-area")
                 .inScenario("Restricted access").whenScenarioStateIs(STARTED)
                 .willSetStateTo("First request made")
@@ -116,7 +116,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void basicAuthentication_GivenPreemptiveAuthenticationSetToTrue_SendsUsernameAndPasswordWithoutNeedingAnUnauthorizedResponse() {
+    void basicAuthentication_GivenPreemptiveAuthenticationSetToTrue_SendsUsernameAndPasswordWithoutNeedingAnUnauthorizedResponse() {
         wireMockServer.stubFor(get("/restricted-area")
                 .withBasicAuth("MyUsername", "MyPassword")
                 .willReturn(ok()));
