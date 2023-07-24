@@ -183,6 +183,33 @@ public class TraversonBuilder {
     }
 
     /**
+     * Navigate the path and delete the resource
+     *
+     * @param body request body to send
+     * @return Response representing the http response
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
+     * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
+     */
+    public Response<JSONObject> delete(Body body) {
+        return traverseAndPerform(Method.DELETE, body, JSONObject.class);
+    }
+
+    /**
+     * Navigate the path and delete the resource
+     *
+     * @param body request body to send
+     * @param returnType Class of return type.
+     * @return Response representing the http response
+     * @throws uk.co.autotrader.traverson.exception.UnknownRelException When navigating a path, a given rel cannot be found
+     * @throws uk.co.autotrader.traverson.exception.IllegalHttpStatusException When a non 2xx response is returned part way through traversing
+     * @throws uk.co.autotrader.traverson.exception.HttpException When the underlying http client experiences an issue with a request. This could be an intermittent issue
+     */
+    public <T> Response<T> delete(Body body, Class<T> returnType) {
+        return traverseAndPerform(Method.DELETE, body, returnType);
+    }
+
+    /**
      * Navigate the path and post the body to the resource
      *
      * @param body request body to send

@@ -77,6 +77,17 @@ public class IntegrationTest {
     }
 
     @Test
+    void requestBody_DeleteWithBodyIsSentCorrectly() {
+        wireMockServer.stubFor(delete(urlEqualTo("/records/1"))
+                .willReturn(WireMock.status(204)));
+        Response<JSONObject> response = traverson.from("http://localhost:8089/records/1")
+                .delete(new TextBody("{\"key\":123}", "application/json", StandardCharsets.UTF_8));
+
+        wireMockServer.verify(1, deleteRequestedFor(urlEqualTo("/records/1")).withRequestBody(equalToJson("{\"key\":123}")));
+        assertThat(response.getStatusCode()).isEqualTo(204);
+    }
+
+    @Test
     void requestBody_MultipartBodyIsSerializedAndPostedCorrectly() {
         byte[] data = new byte[]{0x00, 0x01, 0x02};
         wireMockServer.stubFor(post("/records")

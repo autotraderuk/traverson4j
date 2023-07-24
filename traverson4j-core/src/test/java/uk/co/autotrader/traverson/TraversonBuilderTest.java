@@ -357,6 +357,30 @@ class TraversonBuilderTest {
     }
 
     @Test
+    void delete_GivenInputsBodyAndReturnType_BuildsRequestAndExecutes() throws Exception {
+        when(client.execute(any(Request.class), eq(String.class))).thenReturn(stringResponse);
+
+        Response response = builder.delete(body, String.class);
+
+        Request request = reflectionGetRequest();
+        assertThat(response).isEqualTo(stringResponse);
+        assertThat(request.getBody()).isEqualTo(body);
+        assertThat(request.getMethod()).isEqualTo(Method.DELETE);
+    }
+
+    @Test
+    void delete_GivenInputsAndBody_BuildsRequestAndExecutes() throws Exception {
+        when(client.execute(any(Request.class), eq(JSONObject.class))).thenReturn(firstResponse);
+
+        Response response = builder.delete(body);
+
+        Request request = reflectionGetRequest();
+        assertThat(response).isEqualTo(firstResponse);
+        assertThat(request.getBody()).isEqualTo(body);
+        assertThat(request.getMethod()).isEqualTo(Method.DELETE);
+    }
+
+    @Test
     void get_GivenRelToFollow_NavigatesToLastRelThenPerformsMethod() throws Exception {
         when(firstResponse.isSuccessful()).thenReturn(true);
         when(firstResponse.getResource()).thenReturn(resource);
