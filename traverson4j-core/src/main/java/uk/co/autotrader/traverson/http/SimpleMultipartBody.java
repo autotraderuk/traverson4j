@@ -64,7 +64,7 @@ public class SimpleMultipartBody implements Body<SimpleMultipartBody.BodyPart[]>
         /**
          * Constructs a BodyPart
          * @param name see {@link BodyPart#getName()}
-         * @param inputStream see {@link BodyPart#getData()}
+         * @param inputStream see {@link BodyPart#getInputStream()} ()}
          * @param contentType see {@link BodyPart#getContentType()}
          * @param filename see {@link BodyPart#getFilename()}
          */
