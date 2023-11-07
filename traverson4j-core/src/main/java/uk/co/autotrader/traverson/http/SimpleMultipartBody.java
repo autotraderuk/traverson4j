@@ -1,5 +1,6 @@
 package uk.co.autotrader.traverson.http;
 
+import java.io.InputStream;
 import java.util.Arrays;
 
 /**
@@ -41,6 +42,7 @@ public class SimpleMultipartBody implements Body<SimpleMultipartBody.BodyPart[]>
     public static class BodyPart {
         private final String name;
         private final byte[] data;
+        private final InputStream inputStream;
         private final String contentType;
         private final String filename;
 
@@ -56,6 +58,22 @@ public class SimpleMultipartBody implements Body<SimpleMultipartBody.BodyPart[]>
             this.data = Arrays.copyOf(data, data.length);
             this.contentType = contentType;
             this.filename = filename;
+            this.inputStream = null;
+        }
+
+        /**
+         * Constructs a BodyPart
+         * @param name see {@link BodyPart#getName()}
+         * @param inputStream see {@link BodyPart#getData()}
+         * @param contentType see {@link BodyPart#getContentType()}
+         * @param filename see {@link BodyPart#getFilename()}
+         */
+        public BodyPart(String name, InputStream inputStream, String contentType, String filename) {
+            this.name = name;
+            this.inputStream = inputStream;
+            this.contentType = contentType;
+            this.filename = filename;
+            this.data = null;
         }
 
         /**
@@ -70,7 +88,18 @@ public class SimpleMultipartBody implements Body<SimpleMultipartBody.BodyPart[]>
          * @return the raw data for this body part
          */
         public byte[] getData() {
-            return Arrays.copyOf(data, data.length);
+            if (data == null) {
+                return null;
+            } else {
+                return Arrays.copyOf(data, data.length);
+            }
+        }
+
+        /**
+         * @return the input stream for this body part
+         */
+        public InputStream getInputStream() {
+            return inputStream;
         }
 
         /**

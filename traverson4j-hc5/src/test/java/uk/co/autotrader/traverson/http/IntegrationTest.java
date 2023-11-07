@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.autotrader.traverson.Traverson;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -98,6 +99,26 @@ public class IntegrationTest {
                 )
                 .willReturn(WireMock.status(202)));
         SimpleMultipartBody.BodyPart bodyPart = new SimpleMultipartBody.BodyPart("my-body-part", data, "application/octet-stream", "my-file");
+        SimpleMultipartBody multipartBody = new SimpleMultipartBody(bodyPart);
+        Response<JSONObject> response = traverson.from("http://localhost:8089/records")
+                .post(multipartBody);
+
+        wireMockServer.verify(1, postRequestedFor(urlEqualTo("/records")));
+        assertThat(response.getStatusCode()).isEqualTo(202);
+    }
+
+    @Test
+    void requestBody_MultipartBodyFromInputStreamIsSerializedAndPostedCorrectly() {
+        byte[] data = new byte[]{0x00, 0x01, 0x02};
+        InputStream inputStream = new ByteArrayInputStream(data);
+        wireMockServer.stubFor(post("/records")
+                .withMultipartRequestBody(aMultipart()
+                        .withName("my-body-part")
+                        .withHeader("Content-Type", equalTo("application/octet-stream"))
+                        .withBody(binaryEqualTo(data))
+                )
+                .willReturn(WireMock.status(202)));
+        SimpleMultipartBody.BodyPart bodyPart = new SimpleMultipartBody.BodyPart("my-body-part", inputStream, "application/octet-stream", "my-file");
         SimpleMultipartBody multipartBody = new SimpleMultipartBody(bodyPart);
         Response<JSONObject> response = traverson.from("http://localhost:8089/records")
                 .post(multipartBody);
