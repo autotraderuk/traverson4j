@@ -108,6 +108,24 @@ public class IntegrationTest {
     }
 
     @Test
+    void requestBody_MultipartBodyWithStringKeyValueIsSerializedAndPostedCorrectly() {
+
+        wireMockServer.stubFor(post("/records")
+                .withMultipartRequestBody(aMultipart()
+                        .withName("key")
+                        .withBody(equalTo("value"))
+                )
+                .willReturn(WireMock.status(202)));
+        SimpleMultipartBody.BodyPart bodyPart = new SimpleMultipartBody.BodyPart("key", "value");
+        SimpleMultipartBody multipartBody = new SimpleMultipartBody(bodyPart);
+        Response<JSONObject> response = traverson.from("http://localhost:8089/records")
+                .post(multipartBody);
+
+        wireMockServer.verify(1, postRequestedFor(urlEqualTo("/records")));
+        assertThat(response.getStatusCode()).isEqualTo(202);
+    }
+
+    @Test
     void requestBody_MultipartBodyFromInputStreamIsSerializedAndPostedCorrectly() {
         byte[] data = new byte[]{0x00, 0x01, 0x02};
         InputStream inputStream = new ByteArrayInputStream(data);
