@@ -15,6 +15,8 @@ class MultipartEntityConverter implements HttpEntityConverter {
 
             if (bodyPart.getData() != null) {
                 multipartEntityBuilder.addBinaryBody(bodyPart.getName(), bodyPart.getData(), ContentType.create(bodyPart.getContentType()), bodyPart.getFilename());
+            } else if (bodyPart.getValue() != null) {
+                multipartEntityBuilder.addTextBody(bodyPart.getName(), bodyPart.getValue());
             } else {
                 multipartEntityBuilder.addBinaryBody(bodyPart.getName(), bodyPart.getInputStream(), ContentType.create(bodyPart.getContentType()), bodyPart.getFilename());
             }

@@ -23,6 +23,7 @@ class BodyPartTest {
         assertThat(multipart.getContentType()).isEqualTo("contentType");
         assertThat(multipart.getFilename()).isEqualTo("filename");
         assertThat(multipart.getInputStream()).isNull();
+        assertThat(multipart.getValue()).isNull();
     }
 
     @Test
@@ -30,9 +31,22 @@ class BodyPartTest {
         SimpleMultipartBody.BodyPart multipart = new SimpleMultipartBody.BodyPart("name", new ByteArrayInputStream("data".getBytes(StandardCharsets.UTF_8)), "contentType", "filename");
 
         assertThat(multipart.getName()).isEqualTo("name");
-        assertThat(multipart.getData()).isNull();
+        assertThat(multipart.getInputStream().readAllBytes()).isEqualTo("data".getBytes(StandardCharsets.UTF_8));
         assertThat(multipart.getContentType()).isEqualTo("contentType");
         assertThat(multipart.getFilename()).isEqualTo("filename");
-        assertThat(multipart.getInputStream().readAllBytes()).isEqualTo("data".getBytes(StandardCharsets.UTF_8));
+        assertThat(multipart.getData()).isNull();
+        assertThat(multipart.getValue()).isNull();
+    }
+
+    @Test
+    void init_GivenValuesWithValue_SetsProperties() {
+        SimpleMultipartBody.BodyPart multipart = new SimpleMultipartBody.BodyPart("name", "value");
+
+        assertThat(multipart.getName()).isEqualTo("name");
+        assertThat(multipart.getValue()).isEqualTo("value");
+        assertThat(multipart.getContentType()).isNull();
+        assertThat(multipart.getFilename()).isNull();
+        assertThat(multipart.getData()).isNull();
+        assertThat(multipart.getInputStream()).isNull();
     }
 }

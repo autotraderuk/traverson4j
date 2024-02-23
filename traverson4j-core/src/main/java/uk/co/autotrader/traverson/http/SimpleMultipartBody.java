@@ -42,6 +42,7 @@ public class SimpleMultipartBody implements Body<SimpleMultipartBody.BodyPart[]>
     public static class BodyPart {
         private final String name;
         private final byte[] data;
+        private final String value;
         private final InputStream inputStream;
         private final String contentType;
         private final String filename;
@@ -59,6 +60,7 @@ public class SimpleMultipartBody implements Body<SimpleMultipartBody.BodyPart[]>
             this.contentType = contentType;
             this.filename = filename;
             this.inputStream = null;
+            this.value = null;
         }
 
         /**
@@ -74,6 +76,21 @@ public class SimpleMultipartBody implements Body<SimpleMultipartBody.BodyPart[]>
             this.contentType = contentType;
             this.filename = filename;
             this.data = null;
+            this.value = null;
+        }
+
+        /**
+         * Constructs a BodyPart
+         * @param name see {@link BodyPart#getName()}
+         * @param value see {@link BodyPart#getValue()} ()}
+         */
+        public BodyPart(String name, String value) {
+            this.name = name;
+            this.value = value;
+            this.data = null;
+            this.inputStream = null;
+            this.contentType = null;
+            this.filename = null;
         }
 
         /**
@@ -103,12 +120,18 @@ public class SimpleMultipartBody implements Body<SimpleMultipartBody.BodyPart[]>
         }
 
         /**
+         * @return the value for this body part
+         */
+        public String getValue() {
+            return value;
+        }
+
+        /**
          * @return the content type for this given body part
          */
         public String getContentType() {
             return contentType;
         }
-
 
         /**
          * This can be useful to describe the original filename this body part was generated from
