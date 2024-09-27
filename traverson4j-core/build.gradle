@@ -1,3 +1,4 @@
 dependencies {
-    api 'com.alibaba.fastjson2:fastjson2:2.0.0'
+    api 'com.alibaba.fastjson2:fastjson2:2.0.53'
+
 }
