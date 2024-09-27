@@ -1,6 +1,6 @@
 dependencies {
-    api 'org.apache.httpcomponents.client5:httpclient5:5.2.1',
+    api 'org.apache.httpcomponents.client5:httpclient5:5.4',
             'com.damnhandy:handy-uri-templates:2.1.8'
 
-    testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.35.0"
+    testImplementation 'org.wiremock:wiremock-standalone:3.9.1'
 }

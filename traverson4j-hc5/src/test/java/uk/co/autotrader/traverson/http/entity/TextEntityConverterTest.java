@@ -37,7 +37,7 @@ class TextEntityConverterTest {
         HttpEntity entity = converter.toEntity(new TextBody("data££", "text/plain"));
 
         assertThat(entity).isInstanceOf(StringEntity.class);
-        assertThat(entity.getContent()).hasSameContentAs(new ByteArrayInputStream("data££".getBytes(Charsets.ISO_8859_1)));
+        assertThat(entity.getContent()).hasSameContentAs(new ByteArrayInputStream("data££".getBytes(Charsets.UTF_8)));
         assertThat(entity.getContentType()).isEqualTo("text/plain");
     }
 }
