@@ -1,7 +1,7 @@
 plugins {
     id "java"
-    id "com.github.spotbugs" version "4.7.3" apply false
-    id "org.owasp.dependencycheck" version "8.1.2" apply false
+    id "com.github.spotbugs" version "6.0.26" apply false
+    id "org.owasp.dependencycheck" version "11.1.0" apply false
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
@@ -24,8 +24,11 @@ subprojects {
     apply plugin: 'com.github.spotbugs'
     apply plugin: 'org.owasp.dependencycheck'
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
 
     repositories {
         mavenCentral()
@@ -40,8 +43,8 @@ subprojects {
                 'org.junit.jupiter:junit-jupiter-params:5.9.2',
                 'org.junit.jupiter:junit-jupiter-engine:5.9.2',
                 'com.google.guava:guava:31.1-jre',
-                'org.mockito:mockito-core:5.1.1',
-                'org.mockito:mockito-junit-jupiter:5.1.1',
+                'org.mockito:mockito-core:5.14.2',
+                'org.mockito:mockito-junit-jupiter:5.14.2',
                 'org.assertj:assertj-core:3.24.2',
                 'org.apache.commons:commons-lang3:3.12.0'
     }
@@ -67,7 +70,9 @@ subprojects {
     }
 
     spotbugs {
-        toolVersion = '4.2.3'
+        toolVersion = '4.8.6'
+        excludeFilter = file("${rootDir}/exclude.xml")
+        reportsDir = file("${rootDir}/spotbugs")
     }
 
     build {
@@ -76,7 +81,7 @@ subprojects {
 
     checkstyle {
         configFile = rootProject.file('config/checkstyle/checkstyle.xml')
-        toolVersion = "8.41.1"
+        toolVersion = "10.20.2"
     }
 
     jar {
