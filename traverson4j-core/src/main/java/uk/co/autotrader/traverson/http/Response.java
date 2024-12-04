@@ -47,7 +47,7 @@ public class Response<T> {
     }
 
     public boolean isFaliure() {
-        return is4xx() || is5xx();
+        return is3xx() || is4xx() || is5xx();
     }
 
     public boolean is1xx() {
