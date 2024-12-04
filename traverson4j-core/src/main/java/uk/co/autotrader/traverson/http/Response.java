@@ -43,7 +43,31 @@ public class Response<T> {
     }
 
     public boolean isSuccessful() {
-        return statusCode / 100 == 2;
+        return statusCodeFamily(2);
+    }
+
+    public boolean isFaliure() {
+        return is4xx() || is5xx();
+    }
+
+    public boolean is1xx() {
+        return statusCodeFamily(1);
+    }
+
+    public boolean is3xx() {
+        return statusCodeFamily(3);
+    }
+
+    public boolean is4xx() {
+        return statusCodeFamily(4);
+    }
+
+    public boolean is5xx() {
+        return statusCodeFamily(5);
+    }
+
+    private boolean statusCodeFamily(int family) {
+        return statusCode / 100 == family;
     }
 
     public void addResponseHeader(String name, String value) {
