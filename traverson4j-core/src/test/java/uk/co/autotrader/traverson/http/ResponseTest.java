@@ -60,6 +60,54 @@ class ResponseTest {
         response.addResponseHeader("key2", "value3");
 
         assertThat(response.getResponseHeaders()).containsEntry("key1", "value1").containsEntry("key2", "value3");
+    }
 
+    @ParameterizedTest(name = "given{0}StatusCode_isFailureReturnsTrue")
+    @ValueSource(ints = {500, 404, 302})
+    void isFailure_GivenFailureStatusCode_ReturnsTrue(int statusCode) {
+        Response response = new Response();
+        response.setStatusCode(statusCode);
+
+        assertThat(response.isFaliure()).isTrue();
+    }
+
+    @Test
+    void isFailure_Given201StatusCode_ReturnsFalse() {
+        Response response = new Response();
+        response.setStatusCode(201);
+
+        assertThat(response.isFaliure()).isFalse();
+    }
+
+    @Test
+    void is1xx_given101StatusCode_ReturnsTrue() {
+        Response response = new Response();
+        response.setStatusCode(101);
+
+        assertThat(response.is1xx()).isTrue();
+    }
+
+    @Test
+    void is3xx_given303StatusCode_ReturnsTrue() {
+        Response response = new Response();
+        response.setStatusCode(303);
+
+        assertThat(response.is3xx()).isTrue();
+    }
+
+    @Test
+    void is4xx_given404StatusCode_ReturnsTrue() {
+        Response response = new Response();
+        response.setStatusCode(404);
+
+        assertThat(response.is4xx()).isTrue();
+    }
+
+    @Test
+    void is5xx_given505StatusCode_ReturnsTrue() {
+        Response response = new Response();
+        response.setStatusCode(505);
+
+        assertThat(response.is5xx()).isTrue();
     }
 }
