@@ -46,7 +46,7 @@ public class Response<T> {
         return statusCodeFamily(2);
     }
 
-    public boolean isFailure() {
+    public boolean isFaliure() {
         return is3xx() || is4xx() || is5xx();
     }
 
