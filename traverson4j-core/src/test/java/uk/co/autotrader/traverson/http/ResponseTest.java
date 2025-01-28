@@ -68,7 +68,7 @@ class ResponseTest {
         Response response = new Response();
         response.setStatusCode(statusCode);
 
-        assertThat(response.isFaliure()).isTrue();
+        assertThat(response.isFailure()).isTrue();
     }
 
     @Test
@@ -76,7 +76,7 @@ class ResponseTest {
         Response response = new Response();
         response.setStatusCode(201);
 
-        assertThat(response.isFaliure()).isFalse();
+        assertThat(response.isFailure()).isFalse();
     }
 
     @Test
