@@ -65,7 +65,7 @@ class TemplateUriUtilsTest {
     }
 
     @Test
-    void expandTemplateUri_GivenTemplateUriAndEmptyValueForTemplateParam_ExpandsTemplate() {
+    void expandTemplateUri_GivenTemplateUriAnTemplateParamWithEmptyValue_ExpandsTemplate() {
         String input = "http://example.autotrader.co.uk/dealers{?dealerId,param}";
         Map<String, List<String>> templateParams = new HashMap<>();
         templateParams.put("dealerId", Arrays.asList("1234"));
