@@ -5,10 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,4 +64,15 @@ class TemplateUriUtilsTest {
         assertThat(uri).isEqualTo("http://example.autotrader.co.uk/dealers?dealerId=1234&dealerId=4567&dealerId=78910");
     }
 
+    @Test
+    void expandTemplateUri_GivenTemplateUriAndEmptyValueForTemplateParam_ExpandsTemplate() {
+        String input = "http://example.autotrader.co.uk/dealers{?dealerId,param}";
+        Map<String, List<String>> templateParams = new HashMap<>();
+        templateParams.put("dealerId", Arrays.asList("1234"));
+        templateParams.put("param", new ArrayList<>());
+
+        String uri = templateUriUtils.expandTemplateUri(input, templateParams);
+
+        assertThat(uri).isEqualTo("http://example.autotrader.co.uk/dealers?dealerId=1234");
+    }
 }
