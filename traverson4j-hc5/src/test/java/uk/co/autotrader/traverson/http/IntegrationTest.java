@@ -3,20 +3,26 @@ package uk.co.autotrader.traverson.http;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.autotrader.traverson.Traverson;
+import uk.co.autotrader.traverson.exception.HttpException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class IntegrationTest {
     private static WireMockServer wireMockServer;
@@ -158,8 +164,8 @@ public class IntegrationTest {
                 .willReturn(ok()));
 
         Response<String> response = traverson.from("http://localhost:8089/restricted-area")
-                                            .withAuth("MyUsername", "MyPassword", "http://localhost:8089")
-                                            .get(String.class);
+                .withAuth("MyUsername", "MyPassword", "http://localhost:8089")
+                .get(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(200);
         wireMockServer.verify(2, getRequestedFor(urlEqualTo("/restricted-area")));
@@ -172,10 +178,30 @@ public class IntegrationTest {
                 .willReturn(ok()));
 
         Response<String> response = traverson.from("http://localhost:8089/restricted-area")
-                                            .withAuth("MyUsername", "MyPassword", "http://localhost:8089", true)
-                                            .get(String.class);
+                .withAuth("MyUsername", "MyPassword", "http://localhost:8089", true)
+                .get(String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(200);
         wireMockServer.verify(1, getRequestedFor(urlEqualTo("/restricted-area")));
+    }
+
+
+    @Test
+    void requestTimeout_GivenRequestTimeoutSetInRequest_ThrowsHttpException() {
+        CloseableHttpClient httpClient = HttpClientBuilder.create()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setResponseTimeout(30, TimeUnit.SECONDS)
+                        .build())
+                .build();
+        Traverson patientTraverson = new Traverson(new ApacheHttpTraversonClientAdapter(httpClient));
+        wireMockServer.stubFor(get("/slow")
+                .willReturn(ok().withFixedDelay(1000).withBody("upstream timeout")));
+
+        assertThatThrownBy(() -> {
+            patientTraverson.from("http://localhost:8089/slow")
+                    .withResponseTimeoutPerStep(50, TimeUnit.MILLISECONDS)
+                    .get(JSONObject.class);
+        }).isInstanceOf(HttpException.class)
+                .hasMessage("Read timed out");
     }
 }

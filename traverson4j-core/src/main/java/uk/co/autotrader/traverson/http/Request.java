@@ -1,6 +1,7 @@
 package uk.co.autotrader.traverson.http;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 public class Request {
@@ -13,6 +14,8 @@ public class Request {
     private final Map<String, List<String>> templateParams;
     private Body body;
     private final List<AuthCredential> authCredentials;
+    private Long responseTimeoutValue;
+    private TimeUnit responseTimeoutUnit;
 
     public Request() {
         queryParameters = new HashMap<>();
@@ -92,5 +95,18 @@ public class Request {
             }
             parameterMap.get(name).addAll(Arrays.asList(values));
         };
+    }
+
+    public Long getResponseTimeoutValue() {
+        return this.responseTimeoutValue;
+    }
+
+    public TimeUnit getResponseTimeoutUnit() {
+        return responseTimeoutUnit;
+    }
+
+    public void setResponseTimeout(long duration, TimeUnit unit) {
+       this.responseTimeoutValue = duration;
+       this.responseTimeoutUnit = unit;
     }
 }

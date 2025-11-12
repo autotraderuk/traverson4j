@@ -4,6 +4,7 @@ package uk.co.autotrader.traverson.http;
 import org.apache.hc.client5.http.auth.AuthCache;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.auth.BasicScheme;
@@ -106,6 +107,15 @@ public class ApacheHttpConverters {
 
         clientContext.setCredentialsProvider(credentialsProvider);
         clientContext.setAuthCache(authCache);
+
+        if (request.getResponseTimeoutValue() != null) {
+            RequestConfig defaultConfig = clientContext.getRequestConfigOrDefault();
+            RequestConfig updatedConfig = RequestConfig.copy(defaultConfig)
+                    .setResponseTimeout(request.getResponseTimeoutValue(), request.getResponseTimeoutUnit())
+                    .build();
+            clientContext.setRequestConfig(updatedConfig);
+        }
+
         return clientContext;
     }
 }

@@ -19,6 +19,7 @@ import uk.co.autotrader.traverson.link.hal.HalLinkDiscoverer;
 
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,6 +79,13 @@ class TraversonBuilderTest {
         assertThat(builder.jsonHal()).isEqualTo(builder);
         assertThat(reflectionGetRequest().getAcceptMimeType()).isEqualTo("application/hal+json");
         assertThat(FieldUtils.readDeclaredField(builder, "linkDiscoverer", true)).isInstanceOf(HalLinkDiscoverer.class);
+    }
+
+    @Test
+    void withResponseTimeoutPerStep_SetsResponseTimeoutOnRequest() throws Exception {
+        assertThat(builder.withResponseTimeoutPerStep(456, TimeUnit.MILLISECONDS)).isEqualTo(builder);
+        assertThat(reflectionGetRequest().getResponseTimeoutValue()).isEqualTo(456);
+        assertThat(reflectionGetRequest().getResponseTimeoutUnit()).isEqualTo(TimeUnit.MILLISECONDS);
     }
 
     @Test

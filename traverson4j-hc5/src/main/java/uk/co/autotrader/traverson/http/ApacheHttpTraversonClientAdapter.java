@@ -43,7 +43,7 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
             throw runtimeException;
         } catch (IOException | URISyntaxException e) {
             shouldCloseStream = true;
-            throw new HttpException("Error with httpClient", e);
+            throw new HttpException(e.getMessage(), e);
         } finally {
             if (shouldCloseStream) {
                 IOUtils.close(httpResponse);

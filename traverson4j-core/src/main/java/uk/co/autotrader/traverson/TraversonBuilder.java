@@ -9,6 +9,7 @@ import uk.co.autotrader.traverson.link.hal.HalLinkDiscoverer;
 import uk.co.autotrader.traverson.link.LinkDiscoverer;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Not thread safe
@@ -127,6 +128,18 @@ public class TraversonBuilder {
      */
     public TraversonBuilder withAuth(String username, String password, String hostname, boolean preemptiveAuthentication) {
         this.request.addAuthCredential(new AuthCredential(username, password, hostname, preemptiveAuthentication));
+        return this;
+    }
+
+    /**
+     * Some requests can be slower than others. This applies a response timeout for each request made,
+     * including those in follow. This is <b>per request</b>
+     * @param duration how long to wait
+     * @param unit what timescale
+     * @return the current builder inclusive of response timeout
+     */
+    public TraversonBuilder withResponseTimeoutPerStep(int duration, TimeUnit unit) {
+        this.request.setResponseTimeout(duration, unit);
         return this;
     }
 
