@@ -11,7 +11,6 @@ import uk.co.autotrader.traverson.exception.HttpException;
 import uk.co.autotrader.traverson.http.entity.BodyFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 
 public class ApacheHttpTraversonClientAdapter implements TraversonClient {
@@ -34,20 +33,15 @@ public class ApacheHttpTraversonClientAdapter implements TraversonClient {
         ClassicHttpRequest httpRequest = apacheHttpUriConverter.toRequest(request);
         HttpClientContext clientContext = apacheHttpUriConverter.toHttpClientContext(request);
         CloseableHttpResponse httpResponse = null;
-        boolean shouldCloseStream = !returnType.isAssignableFrom(InputStream.class);
         try {
             httpResponse = adapterClient.execute(httpRequest, clientContext);
             return apacheHttpUriConverter.toResponse(httpResponse, returnType, httpRequest.getUri());
         } catch (RuntimeException runtimeException) {
-            shouldCloseStream = true;
+            IOUtils.close(httpResponse);
             throw runtimeException;
         } catch (IOException | URISyntaxException e) {
-            shouldCloseStream = true;
+            IOUtils.close(httpResponse);
             throw new HttpException(e.getMessage(), e);
-        } finally {
-            if (shouldCloseStream) {
-                IOUtils.close(httpResponse);
-            }
         }
     }
 }

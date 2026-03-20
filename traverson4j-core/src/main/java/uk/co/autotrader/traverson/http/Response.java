@@ -3,11 +3,14 @@ package uk.co.autotrader.traverson.http;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class Response<T> {
     private int statusCode;
     private URI uri;
     private T resource;
+    private boolean resourceConsumed = false;
+    private Supplier<T> resourceF = () -> null;
     private Map<String, String> responseHeaders = new HashMap<String, String>();
 
     public int getStatusCode() {
@@ -27,11 +30,20 @@ public class Response<T> {
     }
 
     public T getResource() {
+        if (!resourceConsumed) {
+            resource = resourceF.get();
+            resourceConsumed = true;
+        }
         return resource;
     }
 
     public void setResource(T resource) {
-        this.resource = resource;
+        setResource(() -> resource);
+    }
+
+    public void setResource(Supplier<T> resourceF) {
+        this.resourceConsumed = false;
+        this.resourceF = resourceF;
     }
 
     public Map<String, String> getResponseHeaders() {

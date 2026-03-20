@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +34,21 @@ class ResponseTest {
         assertThat(response.getStatusCode()).isEqualTo(200);
         assertThat(response.getUri()).isEqualTo(uri);
         assertThat(response.getResponseHeaders()).isEqualTo(headers);
+    }
+
+    @Test
+    void getResource_CachesResourceOnceLoaded() {
+        Response<String> response = new Response<>();
+        response.setResource(() -> UUID.randomUUID().toString());
+
+        assertThat(response.getResource()).isEqualTo(response.getResource());
+    }
+
+    @Test
+    void getResource_GivenNoResourceSet_ReturnsNull() {
+        Response<String> response = new Response<>();
+
+        assertThat(response.getResource()).isNull();
     }
 
     @ParameterizedTest(name = "given{0}StatusCode_isSuccessfulReturnsFalse")

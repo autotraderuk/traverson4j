@@ -1,6 +1,7 @@
 package uk.co.autotrader.traverson.http;
 
 
+import com.alibaba.fastjson2.util.IOUtils;
 import org.apache.hc.client5.http.auth.AuthCache;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class ApacheHttpConverters {
     private static final AuthScope AUTH_SCOPE_MATCHING_ANYTHING = new AuthScope(null, null, -1, null, null);
@@ -70,7 +72,16 @@ public class ApacheHttpConverters {
         HttpEntity httpEntity = httpResponse.getEntity();
         if (httpEntity != null) {
             InputStream content = httpEntity.getContent();
-            response.setResource(conversionService.convert(content, returnType));
+            Supplier<T> getResource = () -> {
+                try {
+                    return conversionService.convert(content, returnType);
+                } finally {
+                    if (!returnType.isAssignableFrom(InputStream.class)) {
+                        IOUtils.close(httpResponse);
+                    }
+                }
+            };
+            response.setResource(getResource);
         }
         return response;
     }

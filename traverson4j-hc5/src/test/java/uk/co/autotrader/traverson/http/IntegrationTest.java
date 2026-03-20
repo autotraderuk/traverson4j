@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.autotrader.traverson.Traverson;
+import uk.co.autotrader.traverson.exception.ConversionException;
 import uk.co.autotrader.traverson.exception.HttpException;
 
 import java.io.ByteArrayInputStream;
@@ -57,6 +58,22 @@ public class IntegrationTest {
                 .get(String.class);
 
         assertThat(response.getResource()).isEqualTo(htmlBody);
+        wireMockServer.verify(getRequestedFor(urlPathEqualTo("/"))
+                .withHeader("Accept", equalTo("content-type")));
+    }
+
+    @Test
+    void getResource_GivenResourceNotOfExpectedType_AllowsYouToGetStatusCodeFirst() throws IOException {
+        String htmlBody = "<html></html>";
+        wireMockServer.stubFor(get(urlEqualTo("/"))
+                .willReturn(WireMock.status(429).withBody(htmlBody)));
+
+        Response<JSONObject> response = traverson.from("http://localhost:8089")
+                .withHeader("Accept", "content-type")
+                .get(JSONObject.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(429);
+        assertThatThrownBy(response::getResource).isInstanceOf(ConversionException.class);
         wireMockServer.verify(getRequestedFor(urlPathEqualTo("/"))
                 .withHeader("Accept", equalTo("content-type")));
     }

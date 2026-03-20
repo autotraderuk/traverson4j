@@ -57,7 +57,7 @@ class ApacheHttpTraversonClientAdapterTest {
         Response<JSONObject> response = clientAdapter.execute(request, JSONObject.class);
 
         assertThat(response).isEqualTo(expectedResponse);
-        verify(httpResponse).close();
+        verify(httpResponse, never()).close();
     }
 
     @Test
