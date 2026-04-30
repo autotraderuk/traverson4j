@@ -32,7 +32,23 @@ Maven:
 ```
 
 ### Jackson support
-To use the new support for Jackson databind 2, you can include the traverson4j-jackson2 module
+For Jackson support, use the recommended Jackson 3 module:
+
+Gradle:
+```gradle
+'uk.co.autotrader:traverson4j-jackson3:3.0.1'
+```
+
+Maven:
+```xml
+<dependency>
+  <groupId>uk.co.autotrader</groupId>
+  <artifactId>traverson4j-jackson3</artifactId>
+  <version>3.0.1</version>
+</dependency>
+```
+
+If you still need Jackson databind 2 compatibility, you can include the `traverson4j-jackson2` module:
 
 Gradle:
 ```gradle
@@ -63,4 +79,3 @@ Maven:
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
