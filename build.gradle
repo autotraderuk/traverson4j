@@ -15,6 +15,7 @@ allprojects {
 project(':traverson4j-core').description("The kernel of traverson4j. This provides the main API for a client to traverse a Hypermedia REST service")
 project(':traverson4j-hc5').description("An Apache HttpComponents 5 client to power traverson4j-core")
 project(':traverson4j-jackson2').description("A ResourceConverter backed by Jackson 2 binding")
+project(':traverson4j-jackson3').description("A ResourceConverter backed by Jackson 3 binding")
 
 subprojects {
     apply plugin: 'java-library'
@@ -187,6 +188,12 @@ project(':traverson4j-hc5') {
 }
 
 project(':traverson4j-jackson2') {
+    dependencies {
+        api project(':traverson4j-core')
+    }
+}
+
+project(':traverson4j-jackson3') {
     dependencies {
         api project(':traverson4j-core')
     }
